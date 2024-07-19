@@ -66,7 +66,7 @@ exports.doAction = async function (event, context) {
                 tokenData.putItem({
                     id: tokenId,
                     userId: resultData[0].id,
-                    token: accessToken,
+                    accessToken: accessToken,
                     createdAt: new Date().toISOString(),
                 }, options);
                 return successResponse({
