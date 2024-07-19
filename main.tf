@@ -51,3 +51,7 @@ module "api_gateway_resources_security" {
   source = "./modules/apigateway-resources-security"
 }
 
+module "api_gateway_resources_security_register" {
+  source = "./modules/apigateway-resources-security-register"
+}
+
