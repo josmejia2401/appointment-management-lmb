@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
+const uuid = require("uuid");
 
-export function buildUuid() {
-    return uuidv4();
+exports.buildUuid = function () {
+    return uuid.v4();
 }

@@ -20,12 +20,6 @@ provider "aws" {
 }
 
 
-####################
-# API GATEWAY
-####################
-module "api_gateway" {
-  source = "./modules/apigateway"
-}
 
 ####################
 # DYNAMO
@@ -36,5 +30,24 @@ module "users_dynamodb" {
 
 module "token_dynamodb" {
   source = "./modules/token-dynamodb"
+}
+
+module "customers_dynamodb" {
+  source = "./modules/customers-dynamodb"
+}
+
+####################
+# API GATEWAY
+####################
+module "api_gateway" {
+  source = "./modules/apigateway"
+}
+
+
+####################
+# API GATEWAY RESOURCES
+####################
+module "api_gateway_resources_security" {
+  source = "./modules/apigateway-resources-security"
 }
 

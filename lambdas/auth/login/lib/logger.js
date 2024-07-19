@@ -1,7 +1,7 @@
-import constants from "./constants";
+const constants = require("./constants");
 
-export function info(payload = { requestId: null, message: null }) {
-    if (["INFO", "ERROR"].includes(constants.LOGGER_LEVEL)) {
+exports.info = function (payload = { requestId: null, message: null }) {
+    if (["INFO", "ERROR"].includes(constants.constants.LOGGER_LEVEL)) {
         console.info({
             "timestamp": new Date().toISOString(),
             "level": 'INFO',
@@ -11,8 +11,8 @@ export function info(payload = { requestId: null, message: null }) {
     }
 }
 
-export function log(payload = { requestId: null, message: null }) {
-    if (["INFO", "ERROR", "DEBUG", "WARN"].includes(constants.LOGGER_LEVEL)) {
+exports.log = function (payload = { requestId: null, message: null }) {
+    if (["INFO", "ERROR", "DEBUG", "WARN"].includes(constants.constants.LOGGER_LEVEL)) {
         console.log({
             "timestamp": new Date().toISOString(),
             "level": 'LOG',
@@ -40,8 +40,8 @@ export function log(payload = { requestId: null, message: null }) {
  * }
  * @param {*} payload 
  */
-export function error(payload = { requestId: null, message: null }) {
-    if (["INFO", "ERROR"].includes(constants.LOGGER_LEVEL)) {
+exports.error = function (payload = { requestId: null, message: null }) {
+    if (["INFO", "ERROR"].includes(constants.constants.LOGGER_LEVEL)) {
         console.error({
             "timestamp": new Date().toISOString(),
             "level": "ERROR",
@@ -51,8 +51,8 @@ export function error(payload = { requestId: null, message: null }) {
     }
 }
 
-export function warn(payload = { requestId: null, message: null }) {
-    if (["WARN", "ERROR", "INFO"].includes(constants.LOGGER_LEVEL)) {
+exports.warn = function (payload = { requestId: null, message: null }) {
+    if (["WARN", "ERROR", "INFO"].includes(constants.constants.LOGGER_LEVEL)) {
         console.warn({
             "timestamp": new Date().toISOString(),
             "level": "WARN",
@@ -62,8 +62,8 @@ export function warn(payload = { requestId: null, message: null }) {
     }
 }
 
-export function debug(payload = { requestId: null, message: null }) {
-    if (["DEBUG", "ERROR"].includes(constants.LOGGER_LEVEL)) {
+exports.debug = function (payload = { requestId: null, message: null }) {
+    if (["DEBUG", "ERROR", "INFO"].includes(constants.constants.LOGGER_LEVEL)) {
         console.debug({
             "timestamp": new Date().toISOString(),
             "level": "DEBUG",

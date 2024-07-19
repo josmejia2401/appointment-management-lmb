@@ -1,4 +1,4 @@
-export const documentTypes = [
+const documentTypes = [
     {
         id: 1,
         name: 'Cédula de ciudadanía'
@@ -21,13 +21,13 @@ export const documentTypes = [
     }
 ];
 
-export function findDocumentTypeById(id) {
+exports.documentTypes = documentTypes;
+
+exports.findDocumentTypeById = function (id) {
     return documentTypes.filter(p => p.id === id)[0];
 }
 
-
-
-export const status = [
+const status = [
     {
         id: 1,
         name: 'ACTIVO'
@@ -42,12 +42,15 @@ export const status = [
     }
 ];
 
-export function findStatusById(id) {
+
+exports.status = status;
+
+exports.findStatusById = function (id) {
     return status.filter(p => p.id === id)[0];
 }
 
 
-export const genders = [
+const genders = [
     {
         id: 1,
         name: 'Masculino'
@@ -65,7 +68,8 @@ export const genders = [
         name: 'Otro'
     }
 ];
+exports.genders = genders;
 
-export function findGenderById(id) {
+exports.findGenderById = function (id) {
     return status.filter(p => p.id === id)[0];
 }

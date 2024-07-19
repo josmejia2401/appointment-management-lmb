@@ -1,19 +1,17 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-    DynamoDBDocumentClient,
+const {
+    DynamoDBClient,
     ScanCommand,
     QueryCommand,
-    PutCommand,
-    GetCommand,
-    DeleteCommand,
-} from "@aws-sdk/lib-dynamodb";
+    PutItemCommand,
+    GetItemCommand,
+    DeleteItemCommand,
+} = require("@aws-sdk/client-dynamodb");
 
-import constants from '../lib/constants';
-import * as logger from '../lib/logger';
+const constants = require('../lib/constants');
+const logger = require('../lib/logger');
 
-const client = new DynamoDBClient({ apiVersion: "2012-08-10", region: constants.REGION });
-const dynamo = DynamoDBDocumentClient.from(client);
-const tableName = `apma_token_${constants.ENVIRONMENT}`;
+const client = new DynamoDBClient({ apiVersion: "2012-08-10", region: constants.constants.REGION });
+const tableName = `tbl-${constants.constants.APP_NAME}-token-${constants.constants.ENVIRONMENT}`;
 
 
 function buildItem(element) {
@@ -33,7 +31,7 @@ function buildItem(element) {
  * 
  * @param {*} payload 
  */
-export async function query(payload = {
+async function query(payload = {
     expressionAttributeValues: {},
     keyConditionExpression: '',
     projectionExpression: undefined,
@@ -54,7 +52,7 @@ export async function query(payload = {
         });
 
         const results = [];
-        const resultData = await dynamo.send(new QueryCommand(params));
+        const resultData = await client.send(new QueryCommand(params));
 
         logger.info({
             requestId: options.requestId,
@@ -74,11 +72,12 @@ export async function query(payload = {
             requestId: options.requestId,
             message: err
         });
+        throw err;
     }
 }
 
 
-export async function scan(payload = {
+async function scan(payload = {
     expressionAttributeValues: {},
     projectionExpression: undefined,
     filterExpression: undefined,
@@ -93,11 +92,11 @@ export async function scan(payload = {
 
         logger.debug({
             requestId: options.requestId,
-            message: params
+            message: JSON.stringify(params)
         });
 
         const results = [];
-        const resultData = await dynamo.send(new ScanCommand(params));
+        const resultData = await client.send(new ScanCommand(params));
 
         logger.info({
             requestId: options.requestId,
@@ -117,11 +116,12 @@ export async function scan(payload = {
             requestId: options.requestId,
             message: err
         });
+        throw err;
     }
 }
 
 
-export async function putItem(payload = {
+async function putItem(payload = {
     id: '',
     userId: '',
     token: '',
@@ -148,10 +148,10 @@ export async function putItem(payload = {
 
         logger.debug({
             requestId: options.requestId,
-            message: params
+            message: JSON.stringify(params)
         });
 
-        const resultData = await dynamo.send(new PutCommand(params));
+        const resultData = await client.send(new PutItemCommand(params));
 
         logger.info({
             requestId: options.requestId,
@@ -164,12 +164,13 @@ export async function putItem(payload = {
             requestId: options.requestId,
             message: err
         });
+        throw err;
     }
 }
 
 
 
-export async function getItem(payload = {
+async function getItem(payload = {
     key: {
         id: {
             S: ''
@@ -189,7 +190,7 @@ export async function getItem(payload = {
             message: params
         });
 
-        const resultData = await dynamo.send(new GetCommand(params));
+        const resultData = await client.send(new GetItemCommand(params));
 
         logger.info({
             requestId: options.requestId,
@@ -202,12 +203,13 @@ export async function getItem(payload = {
             requestId: options.requestId,
             message: err
         });
+        throw err;
     }
 }
 
 
 
-export async function deleteItem(payload = {
+async function deleteItem(payload = {
     key: {
         id: {
             S: ''
@@ -225,7 +227,7 @@ export async function deleteItem(payload = {
             message: params
         });
 
-        const resultData = await dynamo.send(new DeleteCommand(params));
+        const resultData = await client.send(new DeleteItemCommand(params));
 
         logger.info({
             requestId: options.requestId,
@@ -238,5 +240,16 @@ export async function deleteItem(payload = {
             requestId: options.requestId,
             message: err
         });
+        throw err;
     }
+}
+
+
+
+module.exports = {
+    query: query,
+    scan: scan,
+    getItem: getItem,
+    deleteItem: deleteItem,
+    putItem: putItem
 }

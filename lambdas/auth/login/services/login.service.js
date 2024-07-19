@@ -1,28 +1,31 @@
-import * as userData from '../data/users.data';
-import * as tokenData from '../data/token.data';
-import { buildInternalError, buildUnauthorized } from '../lib/global-exception-handler';
-import { findStatusById } from '../lib/list_values';
-import { successResponse } from '../lib/response-handler';
-import { buildUuid } from '../lib/util';
-import { JWT } from '../lib/jwt';
-export async function doAction(event, context) {
+const userData = require('../data/users.data');
+const tokenData = require('../data/token.data');
+const { buildInternalError, buildUnauthorized } = require('../lib/global-exception-handler');
+const { findStatusById } = require('../lib/list_values');
+const { successResponse } = require('../lib/response-handler');
+const { buildUuid } = require('../lib/util');
+const { JWT } = require('../lib/jwt');
+const logger = require('../lib/logger');
+
+exports.doAction = async function (event, context) {
     try {
         if (event.body !== undefined && event.body !== null) {
             const body = JSON.parse(event.body);
             const payload = {
                 expressionAttributeValues: {
                     ':username': {
-                        S: body.username
+                        'S': `${body.username}`
                     },
                     ':password': {
-                        S: body.password
+                        'S': `${body.password}`
                     },
-                    ':status': {
-                        N: `${findStatusById(1).id}`
+                    ':recordStatus': {
+                        'N': `${findStatusById(1).id}`
                     }
                 },
-                projectionExpression: 'id, firstName, lastName, email',
-                filterExpression: 'username=:username AND password=:password AND status=:status'
+                projectionExpression: 'id, firstName, lastName, email, username',
+                filterExpression: 'username=:username AND password=:password AND recordStatus=:recordStatus',
+                limit: 1
             };
             const options = {
                 requestId: context.awsRequestId
@@ -52,12 +55,14 @@ export async function doAction(event, context) {
                     await Promise.all(promises);
                 }
                 const tokenId = buildUuid();
+
                 const accessToken = JWT.sign({
                     username: resultData[0].username,
                     name: resultData[0].firstName,
-                    t_hash: tokenId,
-                    u_hash: resultData[0].id
+                    tokenId: tokenId,
+                    id: resultData[0].id
                 });
+
                 tokenData.putItem({
                     id: tokenId,
                     userId: resultData[0].id,
@@ -68,8 +73,11 @@ export async function doAction(event, context) {
                     accessToken: accessToken
                 });
             }
+        } else {
+            return buildInternalError('Error al iniciar sesión; ID de usuario o contraseña no han sido proveídos');
         }
     } catch (err) {
+        logger.error({ message: err, requestId: '' });
         return buildInternalError("Error al iniciar sesión; Error interno, intenta más tarde")
     }
 }

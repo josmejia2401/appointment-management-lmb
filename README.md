@@ -1,4 +1,5 @@
 terraform init
+terraform validate
 terraform plan
-terraform deploy
+terraform apply
 terraform destroy

@@ -1,4 +1,4 @@
-export function buildInternalError(message, stackTrace = [], errors = []) {
+exports.buildInternalError = function (message, stackTrace = [], errors = []) {
     return {
         statusCode: 500,
         body: JSON.stringify({
@@ -7,10 +7,14 @@ export function buildInternalError(message, stackTrace = [], errors = []) {
             stackTrace: stackTrace,
             errors: errors//[{ field: '', message: '' }]
         }),
+        headers: {
+            "content-type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        }
     };
 }
 
-export function buildUnauthorized(message, stackTrace = [], errors = []) {
+exports.buildUnauthorized = function (message, stackTrace = [], errors = []) {
     return {
         statusCode: 401,
         body: JSON.stringify({
@@ -19,6 +23,10 @@ export function buildUnauthorized(message, stackTrace = [], errors = []) {
             stackTrace: stackTrace,
             errors: errors//[{ field: '', message: '' }]
         }),
+        headers: {
+            "content-type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        }
     };
 }
 

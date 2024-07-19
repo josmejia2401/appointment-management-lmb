@@ -1,19 +1,18 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-    DynamoDBDocumentClient,
+const {
+    DynamoDBClient,
     ScanCommand,
     QueryCommand,
-    PutCommand,
-    GetCommand,
-    DeleteCommand,
-} from "@aws-sdk/lib-dynamodb";
+    PutItemCommand,
+    GetItemCommand,
+    DeleteItemCommand,
+} = require("@aws-sdk/client-dynamodb");
 
-import constants from '../lib/constants';
-import * as logger from '../lib/logger';
 
-const client = new DynamoDBClient({ apiVersion: "2012-08-10", region: constants.REGION });
-const dynamo = DynamoDBDocumentClient.from(client);
-const tableName = `apma_users_${constants.ENVIRONMENT}`;
+const constants = require('../lib/constants');
+const logger = require('../lib/logger');
+
+const client = new DynamoDBClient({ apiVersion: "2012-08-10", region: constants.constants.REGION });
+const tableName = `tbl-${constants.constants.APP_NAME}-users-${constants.constants.ENVIRONMENT}`;
 
 
 function buildItem(element) {
@@ -21,89 +20,56 @@ function buildItem(element) {
         return undefined;
     }
     const invitations = [];
-    const customers = [];
     const employees = [];
-    if (element.invitations.L) {
+    if (element.invitations && element.invitations.L) {
         element.invitations.L.forEach(local => {
             const history = [];
-            if (local.history.L) {
+            if (local.history && local.history.L) {
                 local.history.L.forEach(h => {
                     const subTmp = {
-                        id: h.id.S,
-                        description: h.description.S,
-                        createdAt: h.createdAt.S,
+                        id: h.id?.S,
+                        description: h.description?.S,
+                        createdAt: h.createdAt?.S,
                     };
                     history.push(subTmp);
                 });
             }
             const temp = {
-                id: local.id.S,
-                userFrom: local.userFrom.S,
-                userTo: local.userTo.S,
-                createdAt: local.createdAt.S,
-                note: local.note.S,
-                status: local.status.N,
+                id: local.id?.S,
+                userFrom: local.userFrom?.S,
+                userTo: local.userTo?.S,
+                createdAt: local.createdAt?.S,
+                note: local.note?.S,
+                recordStatus: local.recordStatus?.N,
                 history: history,
             };
             invitations.push(temp);
         });
     }
-    if (element.customers.L) {
-        element.customers.L.forEach(local => {
-            const notes = [];
-            if (local.notes.L) {
-                local.notes.L.forEach(h => {
-                    const subTmp = {
-                        id: h.id.S,
-                        description: h.description.S,
-                        createdAt: h.createdAt.S,
-                        userId: h.userId.S,
-                    };
-                    notes.push(subTmp);
-                });
-            }
-            const temp = {
-                id: local.id.S,
-                firstName: local.firstName.S,
-                lastName: local.lastName.S,
-                email: local.email.S,
-                phoneNumber: local.phoneNumber.S,
-                documentType: local.documentType.N,
-                documentNumber: local.documentNumber.S,
-                birthday: local.birthday.S,
-                gender: local.gender.N,
-                status: local.status.N,
-                createdAt: local.createdAt.S,
-                notes: notes,
-            };
-            customers.push(temp);
-        });
-    }
 
-    if (element.employees.L) {
+    if (element.employees && element.employees.L) {
         element.employees.L.forEach(local => {
             const temp = {
-                id: local.id.S,
-                status: local.status.N,
-                createdAt: local.createdAt.S,
-                note: local.note.S,
+                id: local.id?.S,
+                recordStatus: local.recordStatus?.N,
+                createdAt: local.createdAt?.S,
+                note: local.note?.S,
             };
             employees.push(temp);
         });
     }
 
     return {
-        id: element.id.S,
-        firstName: element.firstName.S,
-        lastName: element.lastName.S,
-        email: element.email.S,
-        username: element.username.S,
-        password: element.password.S,
-        documentType: element.documentType.N,
-        documentNumber: element.documentNumber.S,
-        status: element.status.N,
-        createdAt: element.createdAt.S,
-        customers: customers,
+        id: element.id?.S,
+        firstName: element.firstName?.S,
+        lastName: element.lastName?.S,
+        email: element.email?.S,
+        username: element.username?.S,
+        password: element.password?.S,
+        documentType: element.documentType?.N,
+        documentNumber: element.documentNumber?.S,
+        recordStatus: element.recordStatus?.N,
+        createdAt: element.createdAt?.S,
         employees: employees,
         invitations: invitations,
     };
@@ -114,7 +80,7 @@ function buildItem(element) {
  * 
  * @param {*} payload 
  */
-export async function query(payload = {
+async function query(payload = {
     expressionAttributeValues: {},
     keyConditionExpression: '',
     projectionExpression: undefined,
@@ -135,7 +101,7 @@ export async function query(payload = {
         });
 
         const results = [];
-        const resultData = await dynamo.send(new QueryCommand(params));
+        const resultData = await client.send(new QueryCommand(params));
 
         logger.info({
             requestId: options.requestId,
@@ -155,14 +121,16 @@ export async function query(payload = {
             requestId: options.requestId,
             message: err
         });
+        throw err;
     }
 }
 
 
-export async function scan(payload = {
+async function scan(payload = {
     expressionAttributeValues: {},
     projectionExpression: undefined,
     filterExpression: undefined,
+    limit: undefined
 }, options = { requestId: '' }) {
     try {
         const params = {
@@ -170,15 +138,16 @@ export async function scan(payload = {
             ProjectionExpression: payload.projectionExpression,
             FilterExpression: payload.filterExpression,
             TableName: tableName,
+            Limit: payload.limit
         };
 
         logger.debug({
             requestId: options.requestId,
-            message: params
+            message: JSON.stringify(params)
         });
 
         const results = [];
-        const resultData = await dynamo.send(new ScanCommand(params));
+        const resultData = await client.send(new ScanCommand(params));
 
         logger.info({
             requestId: options.requestId,
@@ -198,11 +167,12 @@ export async function scan(payload = {
             requestId: options.requestId,
             message: err
         });
+        throw err;
     }
 }
 
 
-export async function putItem(payload = {
+async function putItem(payload = {
     id: '',
     firstName: '',
     lastName: '',
@@ -211,7 +181,7 @@ export async function putItem(payload = {
     password: '',
     documentType: '',
     documentNumber: '',
-    status: '',
+    recordStatus: '',
     createdAt: '',
     customers: [],
     employees: [],
@@ -245,8 +215,8 @@ export async function putItem(payload = {
                 documentNumber: {
                     S: payload.documentNumber
                 },
-                status: {
-                    N: payload.status
+                recordStatus: {
+                    N: payload.recordStatus
                 },
                 createdAt: {
                     S: payload.createdAt
@@ -268,7 +238,7 @@ export async function putItem(payload = {
             message: params
         });
 
-        const resultData = await dynamo.send(new PutCommand(params));
+        const resultData = await client.send(new PutItemCommand(params));
 
         logger.info({
             requestId: options.requestId,
@@ -281,12 +251,13 @@ export async function putItem(payload = {
             requestId: options.requestId,
             message: err
         });
+        throw err;
     }
 }
 
 
 
-export async function getItem(payload = {
+async function getItem(payload = {
     key: {
         id: {
             S: ''
@@ -306,7 +277,7 @@ export async function getItem(payload = {
             message: params
         });
 
-        const resultData = await dynamo.send(new GetCommand(params));
+        const resultData = await client.send(new GetItemCommand(params));
 
         logger.info({
             requestId: options.requestId,
@@ -319,12 +290,13 @@ export async function getItem(payload = {
             requestId: options.requestId,
             message: err
         });
+        throw err;
     }
 }
 
 
 
-export async function deleteItem(payload = {
+async function deleteItem(payload = {
     key: {
         id: {
             S: ''
@@ -342,7 +314,7 @@ export async function deleteItem(payload = {
             message: params
         });
 
-        const resultData = await dynamo.send(new DeleteCommand(params));
+        const resultData = await client.send(new DeleteItemCommand(params));
 
         logger.info({
             requestId: options.requestId,
@@ -355,5 +327,17 @@ export async function deleteItem(payload = {
             requestId: options.requestId,
             message: err
         });
+        throw err;
     }
+}
+
+//exports.query = query;
+//exports.scan = scan;
+
+module.exports = {
+    query: query,
+    scan: scan,
+    getItem: getItem,
+    deleteItem: deleteItem,
+    putItem: putItem
 }
