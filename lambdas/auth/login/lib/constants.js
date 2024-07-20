@@ -5,7 +5,7 @@ exports.constants = Object.freeze({
     APP_NAME: `${process.env.APP_NAME || 'appma'}`,
     JWT: {
         SECRET_VALUE: `${process.env.JTW_SECRET_VALUE || 'secret'}`,
-        TOKEN_LIFE: `${process.env.JWT_TOKEN_LIFE || '1000'}`,
+        TOKEN_LIFE: `${process.env.JWT_TOKEN_LIFE || '365d'}`,
     },
     AWS: {
         DYNAMO_DB: {}

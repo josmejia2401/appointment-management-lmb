@@ -34,7 +34,6 @@ exports.doAction = async function (event, context) {
             return "Unauthorized";
         }
         const tokenDecoded = JWT.decodeToken(authorization);
-        console.log("tokenDecoded", tokenDecoded);
         const payload = {
             expressionAttributeValues: {
                 ':id': {
@@ -50,21 +49,13 @@ exports.doAction = async function (event, context) {
         };
         const resultData = await tokenData.scan(payload, options);
 
-        console.log("tokenData", resultData);
 
         if (resultData.length === 0) {
             //return generatePolicy(tokenData.sub, "Deny", event.routeArn);
             return "Unauthorized";
         } else {
             const tokenSelected = resultData[0];
-            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", tokenSelected,
-                {
-                    keyid: tokenDecoded.keyid,
-                    userId: tokenSelected.userId,
-                    isV: JWT.isValidToken(tokenSelected.accessToken)
-                }
-            );
-            if (tokenDecoded.keyid !== tokenSelected.userId || !JWT.isValidToken(tokenSelected.token)) {
+            if (tokenDecoded.keyid !== tokenSelected.userId || !JWT.isValidToken(tokenSelected.accessToken)) {
                 await tokenData.deleteItem({
                     key: {
                         id: {

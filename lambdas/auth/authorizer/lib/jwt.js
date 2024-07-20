@@ -4,7 +4,7 @@ const constants = require('./constants');
 class JWT {
 
     static getOnlyToken(token) {
-        return token.replace("Bearer ", "").replace("bearer ", "");
+        return String(token).replace("Bearer ", "").replace("bearer ", "");
     }
 
     static refreshToken(token) {
@@ -56,8 +56,7 @@ class JWT {
             const newToken = JWT.getOnlyToken(token);
             JWT.validateToken(newToken);
             return true;
-        } catch (err) {
-            console.log("mmmmmmmmmmmmmmmmmmmm", err);
+        } catch (_err) {
             return false;
         }
     }
