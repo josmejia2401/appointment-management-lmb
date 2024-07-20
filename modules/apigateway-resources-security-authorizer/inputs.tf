@@ -79,7 +79,7 @@ variable "tags" {
   nullable    = true
   default = {
     domain    = "security"
-    component = "login"
+    component = "authorizer"
     env       = "dev"
   }
 }

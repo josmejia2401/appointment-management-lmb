@@ -8,6 +8,9 @@ resource "aws_lambda_function" "html_lambda" {
   timeout          = 30
   publish          = false
   tags             = var.tags
+  architectures    = ["arm64"] #x86_64
+  memory_size      = 128
+  #reserved_concurrent_executions = 1
 }
 
 resource "aws_cloudwatch_log_group" "html_loggroup_lambda" {

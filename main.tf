@@ -38,11 +38,19 @@ module "customers_dynamodb" {
 
 ####################
 # API GATEWAY
+# IMPORTANTE: una vez generado la api, se debe hacer replace de inputs.tf > api_id 
+# y actualizar el valor por el nuevo id, luego continuar con los pasos de abajo.
 ####################
 module "api_gateway" {
   source = "./modules/apigateway"
 }
 
+####################
+# API GATEWAY AUTHORIZER
+####################
+module "api_gateway_resources_security_authorizer" {
+  source = "./modules/apigateway-resources-security-authorizer"
+}
 
 ####################
 # API GATEWAY RESOURCES

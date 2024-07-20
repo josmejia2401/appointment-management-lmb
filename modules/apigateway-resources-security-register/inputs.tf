@@ -89,5 +89,5 @@ variable "api_id" {
   description = "ID de la API Gateway"
   type        = string
   nullable    = false
-  default     = "ibmfygaona"
+  default     = "bup57xeb9i"
 }

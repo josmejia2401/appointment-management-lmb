@@ -33,37 +33,39 @@ exports.doAction = async function (event, context) {
             //return generatePolicy("guest", "Deny", event.routeArn); // se debe usar cuando no tiene acceso a un recurso, es decir, path
             return "Unauthorized";
         }
+        if (!JWT.isValidToken(authorization)) {
+            //return generatePolicy(tokenData.sub, "Deny", event.routeArn);
+            return "Unauthorized";
+        }
+
         const tokenDecoded = JWT.decodeToken(authorization);
-        const payload = {
-            expressionAttributeValues: {
-                ':id': {
-                    'S': `${tokenDecoded.jti}`
-                }
-            },
-            projectionExpression: 'id, accessToken, userId, createdAt',
-            filterExpression: 'id=:id',
-            limit: 1
-        };
         const options = {
             requestId: event.requestContext?.requestId
         };
-        const resultData = await tokenData.scan(payload, options);
+        const resultData = await tokenData.getItem({
+            key: {
+                id: {
+                    S: `${tokenDecoded.jti}`
+                }
+            },
+            projectionExpression: 'id, accessToken, userId, createdAt',
+        }, options);
 
 
-        if (resultData.length === 0) {
-            //return generatePolicy(tokenData.sub, "Deny", event.routeArn);
+        if (!resultData) {
             return "Unauthorized";
         } else {
-            const tokenSelected = resultData[0];
-            if (tokenDecoded.keyid !== tokenSelected.userId || !JWT.isValidToken(tokenSelected.accessToken)) {
+            const tokenSelected = resultData;
+            if (tokenDecoded.keyid !== tokenSelected.userId ||
+                !JWT.isValidToken(tokenSelected.accessToken) ||
+                tokenSelected.accessToken !== JWT.getOnlyToken(authorization)) {
                 await tokenData.deleteItem({
                     key: {
                         id: {
-                            S: resultData[0].id
+                            S: resultData.id
                         }
                     }
                 }, options);
-                //return generatePolicy(tokenData.sub, "Deny", event.routeArn);
                 return "Unauthorized";
             }
             return generatePolicy(tokenDecoded.sub, "Allow", event.routeArn);
