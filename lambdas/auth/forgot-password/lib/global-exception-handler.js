@@ -46,3 +46,20 @@ exports.buildBadRequestError = function (message, stackTrace = [], errors = []) 
         }
     };
 }
+
+exports.buildServiceUnavailableError = function () {
+    return {
+        statusCode: 503,
+        body: JSON.stringify({
+            message: 'No te preocupes.',
+            error: 'Estamos realizando mejoras. En un momento estaremos al 100%.',
+            status: 503,
+            stackTrace: [],
+            errors: []
+        }),
+        headers: {
+            "content-type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        }
+    };
+}

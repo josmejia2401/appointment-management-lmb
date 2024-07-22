@@ -1,12 +1,3 @@
-#resource "aws_api_gateway_rest_api" "ppma" {
-#  name        = local.api_name
-#  description = "${local.api_name} API Gateway"
-
-#  endpoint_configuration {
-#    types = ["REGIONAL"]
-#  }
-#}
-
 resource "aws_apigatewayv2_api" "main" {
   name          = local.api_name
   protocol_type = "HTTP"

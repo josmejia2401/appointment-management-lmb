@@ -1,7 +1,7 @@
 
 const servicesData = require('../data/services.data');
 const { buildInternalError, buildBadRequestError } = require('../lib/global-exception-handler');
-const { findStatusById, findDocumentTypeById } = require('../lib/list_values');
+const { findStatusById } = require('../lib/list_values');
 const { successResponse } = require('../lib/response-handler');
 const { buildUuid } = require('../lib/util');
 const logger = require('../lib/logger');
@@ -20,15 +20,13 @@ exports.doAction = async function (event, context) {
             const options = {
                 requestId: context.awsRequestId
             };
-            const userId = buildUuid();
+            const id = buildUuid();
             const payload = {
-                id: buildUuid(),
-                userId: userId,
-                userId: tokenDecoded?.keyid,
-                name: body.name,
-                description: body.description,
-                duration: Number(body.duration),
-                password: body.password,
+                id: id,
+                userId: tokenDecoded?.keyid || "",
+                name: body.name || "",
+                description: body.description || "",
+                duration: Number(body.duration || 0),
                 recordStatus: findStatusById(1)?.id,
                 createdAt: new Date().toISOString()
             };
@@ -41,10 +39,10 @@ exports.doAction = async function (event, context) {
             await servicesData.putItem(payload, options);
             return successResponse(payload);
         } else {
-            return buildBadRequestError('Error al registrar usuario; Verifique la información suministrada.');
+            return buildBadRequestError('Al parecer la solicitud no es correcta. Intenta nuevamente, por favor.');
         }
     } catch (err) {
-        logger.error({ message: err, requestId: '' });
-        return buildInternalError("¡Ups! Hemos tenido problemas para continuar con el proceso.")
+        logger.error({ message: err, requestId: context.awsRequestId });
+        return buildInternalError("No pudimos realizar la solicitud. Intenta más tarde, por favor.")
     }
 }

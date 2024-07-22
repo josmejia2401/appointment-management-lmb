@@ -16,4 +16,5 @@ resource "aws_lambda_permission" "allow_api_gw_invoke_authorizer" {
   function_name = aws_lambda_function.html_lambda.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${data.aws_apigatewayv2_api.selected.execution_arn}/authorizers/${aws_apigatewayv2_authorizer.header_based_authorizer.id}"
+  depends_on    = [aws_apigatewayv2_authorizer.header_based_authorizer]
 }

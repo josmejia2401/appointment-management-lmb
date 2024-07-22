@@ -23,25 +23,12 @@ function buildItem(element) {
     const employees = [];
     if (element.invitations && element.invitations.L) {
         element.invitations.L.forEach(local => {
-            const history = [];
-            if (local.history && local.history.L) {
-                local.history.L.forEach(h => {
-                    const subTmp = {
-                        id: h.id?.S,
-                        description: h.description?.S,
-                        createdAt: h.createdAt?.S,
-                    };
-                    history.push(subTmp);
-                });
-            }
             const temp = {
                 id: local.id?.S,
                 userFrom: local.userFrom?.S,
                 userTo: local.userTo?.S,
+                recordStatus: Number(local.recordStatus?.N),
                 createdAt: local.createdAt?.S,
-                note: local.note?.S,
-                recordStatus: local.recordStatus?.N,
-                history: history,
             };
             invitations.push(temp);
         });
@@ -50,10 +37,9 @@ function buildItem(element) {
     if (element.employees && element.employees.L) {
         element.employees.L.forEach(local => {
             const temp = {
-                id: local.id?.S,
-                recordStatus: local.recordStatus?.N,
+                userId: local.userId?.S,
+                recordStatus: Number(local.recordStatus?.N),
                 createdAt: local.createdAt?.S,
-                note: local.note?.S,
             };
             employees.push(temp);
         });
@@ -66,9 +52,9 @@ function buildItem(element) {
         email: element.email?.S,
         username: element.username?.S,
         password: element.password?.S,
-        documentType: element.documentType?.N,
+        documentType: Number(element.documentType?.N),
         documentNumber: element.documentNumber?.S,
-        recordStatus: element.recordStatus?.N,
+        recordStatus: Number(element.recordStatus?.N),
         createdAt: element.createdAt?.S,
         employees: employees,
         invitations: invitations,
@@ -183,7 +169,6 @@ async function putItem(payload = {
     documentNumber: '',
     recordStatus: '',
     createdAt: '',
-    customers: [],
     employees: [],
     invitations: [],
 }, options = { requestId: '' }) {
@@ -220,9 +205,6 @@ async function putItem(payload = {
                 },
                 createdAt: {
                     S: payload.createdAt
-                },
-                customers: {
-                    L: payload.customers
                 },
                 employees: {
                     L: payload.employees
@@ -330,9 +312,6 @@ async function deleteItem(payload = {
         throw err;
     }
 }
-
-//exports.query = query;
-//exports.scan = scan;
 
 module.exports = {
     query: query,

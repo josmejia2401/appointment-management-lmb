@@ -36,10 +36,12 @@ module "customers_dynamodb" {
   source = "./modules/customers-dynamodb"
 }
 
+module "services_dynamodb" {
+  source = "./modules/services-dynamodb"
+}
+
 ####################
 # API GATEWAY
-# IMPORTANTE: una vez generado la api, se debe hacer replace de inputs.tf > api_id 
-# y actualizar el valor por el nuevo id, luego continuar con los pasos de abajo.
 ####################
 module "api_gateway" {
   source = "./modules/apigateway"
@@ -48,18 +50,45 @@ module "api_gateway" {
 ####################
 # API GATEWAY AUTHORIZER
 ####################
+
 module "api_gateway_resources_security_authorizer" {
   source = "./modules/apigateway-resources-security-authorizer"
+  api_id = module.api_gateway.api_id # < output of module.api_gateway
 }
 
 ####################
 # API GATEWAY RESOURCES
 ####################
+
 module "api_gateway_resources_security" {
   source = "./modules/apigateway-resources-security"
+  api_id = module.api_gateway.api_id # < output of module.api_gateway
+  depends_on = [
+    module.api_gateway,
+    module.users_dynamodb,
+    module.token_dynamodb,
+    module.customers_dynamodb
+  ]
 }
 
 module "api_gateway_resources_security_register" {
   source = "./modules/apigateway-resources-security-register"
+  api_id = module.api_gateway.api_id # < output of module.api_gateway
+  depends_on = [
+    module.api_gateway,
+    module.users_dynamodb,
+    module.token_dynamodb,
+    module.customers_dynamodb
+  ]
+}
+
+module "api_gateway_resources_core_service_create" {
+  source        = "./modules/apigateway-resources-core-service-create"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.services_dynamodb
+  ]
 }
 

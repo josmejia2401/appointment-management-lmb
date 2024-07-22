@@ -13,8 +13,7 @@ const schema = Joi.object({
     description: Joi.string()
         .max(150),
 
-    duration: Joi.number()
-        .required(),
+    duration: Joi.number(),
 
     recordStatus: Joi.number()
         .required(),

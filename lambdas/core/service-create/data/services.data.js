@@ -141,19 +141,19 @@ async function putItem(payload = {
             TableName: tableName,
             Item: {
                 id: {
-                    S: payload.id
+                    S: `${payload.id}`
                 },
                 userId: {
-                    S: payload.userId
+                    S: `${payload.userId}`
                 },
                 name: {
-                    S: payload.name
+                    S: `${payload.name}`
                 },
                 description: {
-                    S: payload.description
+                    S: `${payload.description}`
                 },
                 duration: {
-                    N: payload.duration
+                    N: `${payload.duration}`
                 },
                 recordStatus: {
                     N: `${payload.recordStatus}`
@@ -261,9 +261,6 @@ async function deleteItem(payload = {
         throw err;
     }
 }
-
-//exports.query = query;
-//exports.scan = scan;
 
 module.exports = {
     query: query,
