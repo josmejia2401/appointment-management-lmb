@@ -92,3 +92,12 @@ module "api_gateway_resources_core_service_create" {
   ]
 }
 
+module "api_gateway_resources_core_service_update" {
+  source        = "./modules/apigateway-resources-core-service-update"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.services_dynamodb
+  ]
+}

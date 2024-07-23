@@ -3,12 +3,13 @@ const servicesData = require('../data/services.data');
 const { buildInternalError, buildBadRequestError } = require('../lib/global-exception-handler');
 const { findStatusById } = require('../lib/list_values');
 const { successResponse } = require('../lib/response-handler');
-const { buildUuid } = require('../lib/util');
+const { buildUuid, getTraceID } = require('../lib/util');
 const logger = require('../lib/logger');
 const { validatePayload } = require('../lib/schema');
 const { JWT } = require('../lib/jwt');
 
 exports.doAction = async function (event, context) {
+    const traceID = getTraceID(event.headers || {});
     try {
         if (event.body !== undefined && event.body !== null) {
             const body = JSON.parse(event.body);
@@ -42,7 +43,7 @@ exports.doAction = async function (event, context) {
             return buildBadRequestError('Al parecer la solicitud no es correcta. Intenta nuevamente, por favor.');
         }
     } catch (err) {
-        logger.error({ message: err, requestId: context.awsRequestId });
+        logger.error({ message: err, requestId: traceID });
         return buildInternalError("No pudimos realizar la solicitud. Intenta más tarde, por favor.")
     }
 }
