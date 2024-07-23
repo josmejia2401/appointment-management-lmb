@@ -111,3 +111,13 @@ module "api_gateway_resources_core_service_delete" {
     module.services_dynamodb
   ]
 }
+
+module "api_gateway_resources_core_service_get_by_id" {
+  source        = "./modules/apigateway-resources-core-service-get-by-id"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.services_dynamodb
+  ]
+}
