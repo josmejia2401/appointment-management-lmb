@@ -1,3 +1,27 @@
+const status = [
+    {
+        id: 1,
+        name: 'ACTIVO'
+    },
+    {
+        id: 2,
+        name: 'INACTIVO'
+    },
+    {
+        id: 3,
+        name: 'PENDIENTE'
+    }
+];
+
+
+exports.status = status;
+
+exports.findStatusById = function (id) {
+    return status.filter(p => p.id === id)[0];
+}
+
+
+
 const documentTypes = [
     {
         id: 1,
@@ -24,30 +48,10 @@ const documentTypes = [
 exports.documentTypes = documentTypes;
 
 exports.findDocumentTypeById = function (id) {
-    return documentTypes.filter(p => p.id === id)[0];
+    return documentTypes.filter(p => p.id === Number(id))[0];
 }
 
-const status = [
-    {
-        id: 1,
-        name: 'ACTIVO'
-    },
-    {
-        id: 2,
-        name: 'INACTIVO'
-    },
-    {
-        id: 3,
-        name: 'PENDIENTE'
-    }
-];
 
-
-exports.status = status;
-
-exports.findStatusById = function (id) {
-    return status.filter(p => p.id === id)[0];
-}
 
 
 const genders = [
@@ -71,5 +75,5 @@ const genders = [
 exports.genders = genders;
 
 exports.findGenderById = function (id) {
-    return genders.filter(p => p.id === id)[0];
+    return genders.filter(p => p.id === Number(id))[0];
 }

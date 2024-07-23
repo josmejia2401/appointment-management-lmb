@@ -82,6 +82,10 @@ module "api_gateway_resources_security_register" {
   ]
 }
 
+####################
+# API GATEWAY RESOURCES SERVICES
+####################
+
 module "api_gateway_resources_core_service_create" {
   source        = "./modules/apigateway-resources-core-service-create"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
@@ -129,5 +133,20 @@ module "api_gateway_resources_core_service_find_all_or_filter" {
   depends_on = [
     module.api_gateway,
     module.services_dynamodb
+  ]
+}
+
+
+####################
+# API GATEWAY RESOURCES CUSTOMERS
+####################
+
+module "api_gateway_resources_core_customers_create" {
+  source        = "./modules/apigateway-resources-core-customer-create"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.customers_dynamodb
   ]
 }
