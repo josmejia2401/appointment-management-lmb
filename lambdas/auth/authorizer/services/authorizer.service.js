@@ -24,7 +24,7 @@ const generatePolicy = function (principalId, effect, resource) {
         isAuthorized: effect === "Allow",
     };
 
-    console.log("authResponse", authResponse);
+    console.log("authResponse", JSON.stringify(authResponse));
     return authResponse;
 }
 
@@ -43,16 +43,17 @@ async function processTokenFounded(authorization, tokenDecoded, resultData, even
             });
         } else {
             console.log("exitoso");
+            //callback(null, generatePolicy(tokenDecoded.sub || "guest", "Allow", event.methodArn || event.routeArn));
             callback(null, generatePolicy(tokenDecoded.sub || "guest", "Allow", event.methodArn || event.routeArn));
         }
     } else {
         console.log("sin token encontrado");
         //callback("Unauthorized");
-        callback(null, generatePolicy(tokenDecoded.sub, "Deny", event.methodArn || event.routeArn));
+        callback(null, generatePolicy(tokenDecoded.sub|| "guest", "Deny", event.methodArn || event.routeArn));
     }
 }
 
-exports.doAction = async (event, context, callback) => {
+exports.doAction = (event, context, callback) => {
     try {
         context.callbackWaitsForEmptyEventLoop = false;
         console.log(">>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(event));
