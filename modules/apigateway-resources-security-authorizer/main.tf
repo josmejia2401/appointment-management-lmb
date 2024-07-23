@@ -4,9 +4,9 @@ resource "aws_apigatewayv2_authorizer" "header_based_authorizer" {
   name                              = local.lambda_name
   authorizer_payload_format_version = "2.0"
   authorizer_uri                    = aws_lambda_function.html_lambda.invoke_arn
-  enable_simple_responses           = true
+  enable_simple_responses           = false
   identity_sources                  = ["$request.header.authorization"]
-  authorizer_result_ttl_in_seconds  = 3600
+  authorizer_result_ttl_in_seconds  = 0 #3600
 }
 
 

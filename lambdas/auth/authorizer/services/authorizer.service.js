@@ -3,6 +3,7 @@ const { JWT } = require('../lib/jwt');
 const logger = require('../lib/logger');
 
 const generatePolicy = function (principalId, effect, resource) {
+
     const authResponse = {};
 
     authResponse.principalId = principalId;
@@ -14,64 +15,68 @@ const generatePolicy = function (principalId, effect, resource) {
         statementOne.Action = 'execute-api:Invoke';
         statementOne.Effect = effect;
         statementOne.Resource = resource;
+        //statementOne.Resource = [resource, "*"];
         policyDocument.Statement[0] = statementOne;
         authResponse.policyDocument = policyDocument;
     }
-
     // Optional output with custom properties of the String, Number or Boolean type.
     authResponse.context = {
-        "isAuthorized": effect === "Allow",
+        isAuthorized: effect === "Allow",
     };
+
+    console.log("authResponse", authResponse);
     return authResponse;
 }
 
-exports.doAction = async function (event, context) {
+async function processTokenFounded(authorization, tokenDecoded, resultData, event, callback) {
+    if (resultData) {
+        if (tokenDecoded.keyid !== resultData.userId || !JWT.isValidToken(resultData.accessToken) || resultData.accessToken !== JWT.getOnlyToken(authorization)) {
+            tokenData.deleteItem({
+                key: {
+                    id: {
+                        S: resultData.id
+                    }
+                }
+            }, options).then(r => {
+                console.log("deleteItem", r);
+                callback("Unauthorized");
+            });
+        } else {
+            console.log("exitoso");
+            callback(null, generatePolicy(tokenDecoded.sub || "guest", "Allow", event.methodArn || event.routeArn));
+        }
+    } else {
+        console.log("sin token encontrado");
+        //callback("Unauthorized");
+        callback(null, generatePolicy(tokenDecoded.sub, "Deny", event.methodArn || event.routeArn));
+    }
+}
+
+exports.doAction = async (event, context, callback) => {
     try {
+        context.callbackWaitsForEmptyEventLoop = false;
+        console.log(">>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(event));
         const headers = event.headers;
         const authorization = headers?.Authorization || headers?.authorization || event.authorizationToken;
-        if (!authorization) {
-            //return generatePolicy("guest", "Deny", event.routeArn); // se debe usar cuando no tiene acceso a un recurso, es decir, path
-            return "Unauthorized";
-        }
-        if (!JWT.isValidToken(authorization)) {
-            //return generatePolicy(tokenData.sub, "Deny", event.routeArn);
-            return "Unauthorized";
-        }
-
-        const tokenDecoded = JWT.decodeToken(authorization);
-        const options = {
-            requestId: event.requestContext?.requestId
-        };
-        const resultData = await tokenData.getItem({
-            key: {
-                id: {
-                    S: `${tokenDecoded.jti}`
-                }
-            },
-            projectionExpression: 'id, accessToken, userId, createdAt',
-        }, options);
-
-
-        if (!resultData) {
-            return "Unauthorized";
-        } else {
-            const tokenSelected = resultData;
-            if (tokenDecoded.keyid !== tokenSelected.userId ||
-                !JWT.isValidToken(tokenSelected.accessToken) ||
-                tokenSelected.accessToken !== JWT.getOnlyToken(authorization)) {
-                await tokenData.deleteItem({
-                    key: {
-                        id: {
-                            S: resultData.id
-                        }
+        if (authorization && JWT.isValidToken(authorization)) {
+            const tokenDecoded = JWT.decodeToken(authorization);
+            const options = {
+                requestId: event.requestContext?.requestId
+            };
+            tokenData.getItem({
+                key: {
+                    id: {
+                        S: `${tokenDecoded.jti}`
                     }
-                }, options);
-                return "Unauthorized";
-            }
-            return generatePolicy(tokenDecoded.sub, "Allow", event.routeArn);
+                }, projectionExpression: 'id, accessToken, userId, createdAt',
+            }, options).then(resultData => processTokenFounded(authorization, tokenDecoded, resultData, event, callback));
+        } else {
+            console.log("sin cabecera");
+            callback("Unauthorized");
         }
     } catch (err) {
         logger.error({ message: err, requestId: event.requestContext?.requestId });
-        return "Error: Invalid token";
+        callback("Error: Invalid token");
+        //throw err;
     }
 }

@@ -36,10 +36,10 @@ class JWT {
 
     static validateToken(token) {
         const newToken = JWT.getOnlyToken(token);
-        console.log("es valido", verify(newToken, constants.constants.JWT.SECRET_VALUE, {
+        verify(newToken, constants.constants.JWT.SECRET_VALUE, {
             audience: constants.constants.APP_NAME,
             algorithms: ['HS256'],
-        }));
+        });
     }
 
     static decodeToken(token) {

@@ -23,14 +23,17 @@ resource "aws_apigatewayv2_stage" "dev" {
       routeKey                = "$context.routeKey"
       status                  = "$context.status"
       responseLength          = "$context.responseLength"
-      integrationErrorMessage = "$context.integrationErrorMessage"
+      integrationErrorMessage = "$context.integrationErrorMessage",
+      apiGatewayError         = "$context.error.message",
+      authorizationError      = "$context.authorizer.error",
+      integrationRealError    = "$context.integration.error"
       }
     )
   }
 }
 
 resource "aws_cloudwatch_log_group" "main_api_gw" {
-  name = "/aws/api-gw/${aws_apigatewayv2_api.main.name}"
-
-  retention_in_days = 5
+  name              = "/aws/api-gw/${aws_apigatewayv2_api.main.name}"
+  log_group_class   = "STANDARD"
+  retention_in_days = 7
 }

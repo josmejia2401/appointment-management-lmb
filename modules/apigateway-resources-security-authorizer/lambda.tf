@@ -13,5 +13,7 @@ resource "aws_lambda_function" "html_lambda" {
 }
 
 resource "aws_cloudwatch_log_group" "html_loggroup_lambda" {
-  name = "/aws/lambda/${aws_lambda_function.html_lambda.function_name}"
+  name              = "/aws/lambda/${aws_lambda_function.html_lambda.function_name}"
+  log_group_class   = "STANDARD"
+  retention_in_days = 7
 }
