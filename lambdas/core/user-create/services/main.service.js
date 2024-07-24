@@ -25,7 +25,7 @@ exports.doAction = async function (event, context) {
                 lastName: body.lastName,
                 email: body.email,
                 phoneNumber: body.phoneNumber,
-                documentType: findDocumentTypeById(body.documentType)?.id || "",
+                documentType: findDocumentTypeById(body.documentType)?.id || 0,
                 documentNumber: body.documentNumber || "",
                 recordStatus: findStatusById(1)?.id,
                 createdAt: new Date().toISOString(),
