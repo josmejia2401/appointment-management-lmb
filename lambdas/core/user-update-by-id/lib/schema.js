@@ -21,7 +21,7 @@ const schema = Joi.object({
 
     documentType: Joi.number(),
 
-    documentNumber: Joi.number(),
+    documentNumber: Joi.string(),
 
 });
 

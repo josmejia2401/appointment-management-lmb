@@ -12,8 +12,6 @@ async function test() {
             lastName: 'lastName',
             email: 'email@email.com',
             phoneNumber: '3105397699',
-            documentType: '1',
-            documentNumber: '111',
             birthday: new Date().toISOString(),
             gender: 1,
             status: 1,

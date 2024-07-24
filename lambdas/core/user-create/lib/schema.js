@@ -8,7 +8,7 @@ const schema = Joi.object({
     username: Joi.string()
         .max(20)
         .required(),
-        
+
     password: Joi.string()
         .max(20)
         .required(),
@@ -30,7 +30,7 @@ const schema = Joi.object({
 
     documentType: Joi.number(),
 
-    documentNumber: Joi.number(),
+    documentNumber: Joi.string().empty("").optional(),
 
     recordStatus: Joi.number()
         .required(),
