@@ -30,7 +30,7 @@ exports.doAction = async function (event, _context) {
                         S: `${pathParameters.id}`
                     },
                 },
-                projectionExpression: 'username, firstName, lastName, email, phoneNumber, documentType, documentNumber, recordStatus, createdAt'
+                projectionExpression: 'username, firstName, lastName, email, phoneNumber, documentType, documentNumber, recordStatus, createdAt, employees'
             }, options);
             return successResponse(response);
         } else {
