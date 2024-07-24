@@ -12,7 +12,7 @@ exports.doAction = async function (event, _context) {
     const traceID = getTraceID(event.headers || {});
     try {
         logger.info({ message: JSON.stringify(event), requestId: traceID });
-        //queryStringParameters
+        
         if (event.pathParameters !== undefined && event.pathParameters !== null) {
             const pathParameters = event.pathParameters;
             const body = JSON.parse(event.body);
@@ -27,7 +27,7 @@ exports.doAction = async function (event, _context) {
                 name: body.name || "",
                 description: body.description || "",
                 duration: Number(body.duration || 0),
-                recordStatus: findStatusById(body.recordStatus)?.id
+                recordStatus: findStatusById(1)?.id
             };
 
             const errorBadRequest = validatePayload(payload);

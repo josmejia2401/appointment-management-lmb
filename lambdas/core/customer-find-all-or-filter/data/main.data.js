@@ -15,20 +15,6 @@ function buildItem(element) {
         return undefined;
     }
 
-    const notes = [];
-    if (element.notes && element.notes.L) {
-        element.notes.L.forEach(local => {
-            const temp = {
-                id: local.id?.S,
-                userId: local.userId?.S,
-                serviceId: local.serviceId?.S,
-                description: local.description?.S,
-                createdAt: local.createdAt?.S,
-            };
-            notes.push(temp);
-        });
-    }
-
     return {
         id: element.id?.S,
         userId: element.userId?.S,
@@ -43,7 +29,6 @@ function buildItem(element) {
         gender: Number(element.gender?.N),
         recordStatus: Number(element.recordStatus?.N),
         createdAt: element.createdAt?.S,
-        notes: notes
     };
 }
 

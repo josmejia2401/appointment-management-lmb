@@ -14,6 +14,9 @@ async function updateItem(payload = {
     key: {
         id: {
             S: ''
+        },
+        userId: {
+            S: ''
         }
     },
     updateExpression: '',

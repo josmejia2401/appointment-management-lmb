@@ -60,8 +60,8 @@ module "api_gateway_resources_security_authorizer" {
 # API GATEWAY RESOURCES
 ####################
 
-module "api_gateway_resources_security" {
-  source = "./modules/apigateway-resources-security"
+module "api_gateway_resources_security_login" {
+  source = "./modules/apigateway-resources-security-login"
   api_id = module.api_gateway.api_id # < output of module.api_gateway
   depends_on = [
     module.api_gateway,
@@ -71,14 +71,37 @@ module "api_gateway_resources_security" {
   ]
 }
 
-module "api_gateway_resources_security_register" {
-  source = "./modules/apigateway-resources-security-register"
-  api_id = module.api_gateway.api_id # < output of module.api_gateway
+####################
+# API GATEWAY RESOURCES USERS
+####################
+
+module "api_gateway_resources_core_user_create" {
+  source        = "./modules/apigateway-resources-core-user-create"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
     module.api_gateway,
-    module.users_dynamodb,
-    module.token_dynamodb,
-    module.customers_dynamodb
+    module.users_dynamodb
+  ]
+}
+
+module "api_gateway_resources_core_user_update" {
+  source        = "./modules/apigateway-resources-core-user-update"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.users_dynamodb
+  ]
+}
+
+module "api_gateway_resources_core_user_find_by_id" {
+  source        = "./modules/apigateway-resources-core-user-find-by-id"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.users_dynamodb
   ]
 }
 
@@ -141,8 +164,49 @@ module "api_gateway_resources_core_service_find_all_or_filter" {
 # API GATEWAY RESOURCES CUSTOMERS
 ####################
 
-module "api_gateway_resources_core_customers_create" {
+
+module "api_gateway_resources_core_customer_create" {
   source        = "./modules/apigateway-resources-core-customer-create"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.customers_dynamodb
+  ]
+}
+
+module "api_gateway_resources_core_customer_update" {
+  source        = "./modules/apigateway-resources-core-customer-update"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.customers_dynamodb
+  ]
+}
+
+module "api_gateway_resources_core_customer_delete" {
+  source        = "./modules/apigateway-resources-core-customer-delete"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.customers_dynamodb
+  ]
+}
+
+module "api_gateway_resources_core_customer_find_by_id" {
+  source        = "./modules/apigateway-resources-core-customer-find-by-id"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.customers_dynamodb
+  ]
+}
+
+module "api_gateway_resources_core_customer_find_all_or_filter" {
+  source        = "./modules/apigateway-resources-core-customer-find-all-or-filter"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [

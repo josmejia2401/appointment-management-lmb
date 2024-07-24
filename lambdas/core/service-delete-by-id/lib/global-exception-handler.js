@@ -66,3 +66,21 @@ exports.buildServiceUnavailableError = function () {
         }
     };
 }
+
+
+exports.buildServiceNotImplementedError = function () {
+    return {
+        statusCode: 501,
+        body: JSON.stringify({
+            message: 'Servicio no implementado.',
+            error: 'Al parecer, esta operación no está implementada.',
+            status: 501,
+            stackTrace: [],
+            errors: []
+        }),
+        headers: {
+            "content-type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        }
+    };
+}

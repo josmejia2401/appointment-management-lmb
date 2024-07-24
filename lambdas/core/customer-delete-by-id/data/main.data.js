@@ -38,7 +38,7 @@ async function deleteItem(payload = {
             message: resultData.Item !== undefined
         });
 
-        return buildItem(resultData.Item);
+        return resultData;
     } catch (err) {
         logger.error({
             requestId: options.requestId,
