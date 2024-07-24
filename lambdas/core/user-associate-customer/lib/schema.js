@@ -3,26 +3,15 @@ const { buildBadRequestError } = require('./global-exception-handler');
 
 const schema = Joi.object({
 
-    firstName: Joi.string()
-        .max(100)
+    userId: Joi.string()
+        .max(50)
         .required(),
 
-    lastName: Joi.string()
-        .max(100)
+    recordStatus: Joi.number()
         .required(),
 
-    email: Joi.string()
-        .email()
+    createdAt: Joi.date()
         .required(),
-
-    phoneNumber: Joi.string()
-        .max(15)
-        .required(),
-
-    documentType: Joi.number(),
-
-    documentNumber: Joi.number(),
-
 });
 
 exports.validatePayload = function (payload) {

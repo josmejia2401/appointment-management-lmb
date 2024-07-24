@@ -1,6 +1,7 @@
 const {
     DynamoDBClient,
-    GetItemCommand,
+    UpdateItemCommand,
+    GetItemCommand
 } = require("@aws-sdk/client-dynamodb");
 
 
@@ -18,12 +19,13 @@ function buildItem(element) {
 
     const employees = [];
 
-    if (element.employees && element.employees.L) {
+    if (element.employees && element.employees.L && element.employees.L.length > 0) {
         element.employees.L.forEach(local => {
+            const temp = local.M;
             const employee = {
-                userId: local.userId.S,
-                recordStatus: Number(local.recordStatus.N),
-                createdAt: local.createdAt.S,
+                userId: temp.userId.S,
+                recordStatus: Number(temp.recordStatus.N),
+                createdAt: temp.createdAt.S,
             };
             employees.push(employee);
         });
@@ -82,6 +84,54 @@ async function getItem(payload = {
 }
 
 
+async function updateItem(payload = {
+    key: {
+        id: {
+            S: ''
+        },
+    },
+    updateExpression: '',
+    expressionAttributeNames: {},
+    expressionAttributeValues: {},
+    conditionExpression: '',
+    filterExpression: ''
+}, options = { requestId: '' }) {
+    try {
+        const params = {
+            TableName: tableName,
+            Key: payload.key,
+            UpdateExpression: payload.updateExpression,
+            ExpressionAttributeNames: payload.expressionAttributeNames,
+            ExpressionAttributeValues: payload.expressionAttributeValues,
+            ConditionExpression: payload.conditionExpression,
+            FilterExpression: payload.filterExpression,
+            ReturnValues: "ALL_NEW"
+        };
+
+        logger.info({
+            requestId: options.requestId,
+            message: JSON.stringify(params)
+        });
+
+        const resultData = await client.send(new UpdateItemCommand(params));
+
+        logger.info({
+            requestId: options.requestId,
+            message: resultData
+        });
+
+        return resultData;
+    } catch (err) {
+        logger.error({
+            requestId: options.requestId,
+            message: err
+        });
+        throw err;
+    }
+}
+
+
 module.exports = {
-    getItem: getItem,
+    updateItem: updateItem,
+    getItem: getItem
 }

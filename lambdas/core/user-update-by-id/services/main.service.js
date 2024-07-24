@@ -36,9 +36,7 @@ exports.doAction = async function (event, _context) {
                 phoneNumber: body.phoneNumber || "",
 
                 documentType: findDocumentTypeById(body.documentType)?.id,
-                documentNumber: body.documentNumber || "",
-
-                recordStatus: findStatusById(1)?.id,
+                documentNumber: body.documentNumber || ""
             };
 
             const errorBadRequest = validatePayload(payload);
@@ -58,8 +56,7 @@ exports.doAction = async function (event, _context) {
                     "#phoneNumber": "phoneNumber",
 
                     "#documentType": "documentType",
-                    "#documentNumber": "documentNumber",
-                    "#recordStatus": "recordStatus",
+                    "#documentNumber": "documentNumber"
                 },
                 expressionAttributeValues: {
                     ":firstName": {
@@ -81,12 +78,8 @@ exports.doAction = async function (event, _context) {
                     ":documentNumber": {
                         "S": `${payload.documentNumber}`
                     },
-
-                    ":recordStatus": {
-                        "N": `${payload.recordStatus}`
-                    },
                 },
-                updateExpression: "SET #firstName=:firstName, #lastName=:lastName, #email=:email, #phoneNumber=:phoneNumber, #documentType=:documentType, #documentNumber=:documentNumber, #recordStatus=:recordStatus",
+                updateExpression: "SET #firstName=:firstName, #lastName=:lastName, #email=:email, #phoneNumber=:phoneNumber, #documentType=:documentType, #documentNumber=:documentNumber",
                 conditionExpression: undefined,
                 filterExpression: "attribute_exists(username)"
             }, options);

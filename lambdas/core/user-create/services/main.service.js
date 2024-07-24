@@ -28,7 +28,8 @@ exports.doAction = async function (event, context) {
                 documentType: findDocumentTypeById(body.documentType)?.id || "",
                 documentNumber: body.documentNumber || "",
                 recordStatus: findStatusById(1)?.id,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                employees: []
             };
 
             const errorBadRequest = validatePayload(payload);

@@ -8,9 +8,11 @@ resource "aws_apigatewayv2_integration" "lambda_handler" {
 }
 
 resource "aws_apigatewayv2_route" "post_handler" {
-  api_id    = data.aws_apigatewayv2_api.selected.id
-  route_key = "POST /api/${var.domain}/${var.subdomain}"
-  target    = "integrations/${aws_apigatewayv2_integration.lambda_handler.id}"
+  api_id             = data.aws_apigatewayv2_api.selected.id
+  route_key          = "PUT /api/${var.domain}/${var.subdomain}/associate-employee/{id}"
+  target             = "integrations/${aws_apigatewayv2_integration.lambda_handler.id}"
+  authorization_type = "CUSTOM"
+  authorizer_id      = var.authorizer_id
 }
 
 resource "aws_lambda_permission" "api_gw" {

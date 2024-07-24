@@ -17,6 +17,19 @@ function buildItem(element) {
         return undefined;
     }
 
+    const employees = [];
+
+    if (element.employees && element.employees.L) {
+        element.employees.L.forEach(local => {
+            const employee = {
+                userId: local.userId.S,
+                recordStatus: Number(local.recordStatus.N),
+                createdAt: local.createdAt.S,
+            };
+            employees.push(employee);
+        });
+    }
+
     return {
         id: element.id?.S,
         username: element.username?.S,
@@ -28,6 +41,7 @@ function buildItem(element) {
         documentNumber: element.documentNumber?.S,
         recordStatus: Number(element.recordStatus?.N),
         createdAt: element.createdAt?.S,
+        employees: employees
     };
 }
 
@@ -89,6 +103,7 @@ async function putItem(payload = {
     documentNumber: '',
     recordStatus: 1,
     createdAt: '',
+    employees: []
 }, options = { requestId: '' }) {
     try {
         const params = {
@@ -128,6 +143,9 @@ async function putItem(payload = {
                 },
                 createdAt: {
                     S: payload.createdAt
+                },
+                employees: {
+                    L: payload.employees
                 },
             },
         };
