@@ -1,7 +1,7 @@
 
 const mainData = require('../data/main.data');
 const { buildInternalError, buildBadRequestError } = require('../lib/global-exception-handler');
-const { findStatusById, findDocumentTypeById } = require('../lib/list_values');
+const { findStatusById } = require('../lib/list_values');
 const { successResponse } = require('../lib/response-handler');
 const { buildUuid, getTraceID } = require('../lib/util');
 const logger = require('../lib/logger');
@@ -25,8 +25,6 @@ exports.doAction = async function (event, context) {
                 lastName: body.lastName,
                 email: body.email,
                 phoneNumber: body.phoneNumber,
-                documentType: findDocumentTypeById(body.documentType)?.id || 0,
-                documentNumber: body.documentNumber || "",
                 recordStatus: findStatusById(1)?.id,
                 createdAt: new Date().toISOString(),
                 employees: []
@@ -39,17 +37,11 @@ exports.doAction = async function (event, context) {
 
             const userFounded = await mainData.scan({
                 expressionAttributeValues: {
-                    ':documentType': {
-                        N: `${payload.documentType}`
-                    },
-                    ':documentNumber': {
-                        S: `${payload.documentNumber}`
-                    },
                     ":username": {
                         S: `${payload.username}`
                     }
                 },
-                filterExpression: '(documentType=:documentType AND documentNumber=:documentNumber) or username=:username',
+                filterExpression: 'username=:username',
                 projectionExpression: 'userId',
                 limit: 1
             }, options);

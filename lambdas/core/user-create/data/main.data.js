@@ -37,8 +37,6 @@ function buildItem(element) {
         lastName: element.lastName?.S,
         email: element.email?.S,
         phoneNumber: element.phoneNumber?.S,
-        documentType: Number(element.documentType?.N),
-        documentNumber: element.documentNumber?.S,
         recordStatus: Number(element.recordStatus?.N),
         createdAt: element.createdAt?.S,
         employees: employees
@@ -99,8 +97,6 @@ async function putItem(payload = {
     lastName: '',
     email: '',
     phoneNumber: '',
-    documentType: 0,
-    documentNumber: '',
     recordStatus: 1,
     createdAt: '',
     employees: []
@@ -130,12 +126,6 @@ async function putItem(payload = {
 
                 phoneNumber: {
                     S: `${payload.phoneNumber}`
-                },
-                documentType: {
-                    N: `${payload.documentType}`
-                },
-                documentNumber: {
-                    S: `${payload.documentNumber}`
                 },
 
                 recordStatus: {

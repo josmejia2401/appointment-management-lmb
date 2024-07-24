@@ -28,10 +28,6 @@ const schema = Joi.object({
     phoneNumber: Joi.string()
         .max(15),
 
-    documentType: Joi.number(),
-
-    documentNumber: Joi.string().empty("").optional(),
-
     recordStatus: Joi.number()
         .required(),
 

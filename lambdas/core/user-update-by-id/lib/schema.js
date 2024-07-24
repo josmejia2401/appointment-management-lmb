@@ -19,10 +19,6 @@ const schema = Joi.object({
         .max(15)
         .required(),
 
-    documentType: Joi.number(),
-
-    documentNumber: Joi.string(),
-
 });
 
 exports.validatePayload = function (payload) {
