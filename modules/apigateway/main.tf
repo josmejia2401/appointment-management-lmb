@@ -2,6 +2,12 @@ resource "aws_apigatewayv2_api" "main" {
   name          = local.api_name
   protocol_type = "HTTP"
   description   = "${local.api_name} API Gateway"
+  cors_configuration {
+    allow_origins = ["*", "http://localhost:3000"]
+    allow_methods = ["POST", "GET", "OPTIONS", "DELETE", "PUT"]
+    allow_headers = ["*"]
+    max_age       = 300
+  }
 }
 
 resource "aws_apigatewayv2_stage" "dev" {

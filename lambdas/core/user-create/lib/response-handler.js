@@ -4,6 +4,7 @@ exports.successResponse = function (payload) {
         isBase64Encoded: false,
         headers: {
             "content-type": "application/json",
+            "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Origin": "*"
         },
         body: JSON.stringify(payload),
