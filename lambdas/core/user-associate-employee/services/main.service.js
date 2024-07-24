@@ -67,21 +67,17 @@ exports.doAction = async function (event, _context) {
                     },
                     expressionAttributeValues: {
                         ":recordStatusValue": {
-                            L: [
-                                {
-                                    M: {
-                                        recordStatus: {
-                                            N: `${payload.recordStatus}`
-                                        },
-                                        userId: {
-                                            S: `${exists.userId}`
-                                        },
-                                        createdAt: {
-                                            S: `${exists.createdAt}`
-                                        }
-                                    }
+                            M: {
+                                recordStatus: {
+                                    N: `${payload.recordStatus}`
+                                },
+                                userId: {
+                                    S: `${exists.userId}`
+                                },
+                                createdAt: {
+                                    S: `${exists.createdAt}`
                                 }
-                            ]
+                            }
                         }
                     },
                     updateExpression: `SET #employees[${index}] = :recordStatusValue`,
