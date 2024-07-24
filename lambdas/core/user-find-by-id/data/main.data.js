@@ -18,12 +18,13 @@ function buildItem(element) {
 
     const employees = [];
 
-    if (element.employees && element.employees.L) {
+    if (element.employees && element.employees.L && element.employees.L.length > 0) {
         element.employees.L.forEach(local => {
+            const temp = local.M;
             const employee = {
-                userId: local.userId.S,
-                recordStatus: Number(local.recordStatus.N),
-                createdAt: local.createdAt.S,
+                userId: temp.userId.S,
+                recordStatus: Number(temp.recordStatus.N),
+                createdAt: temp.createdAt.S,
             };
             employees.push(employee);
         });
