@@ -34,10 +34,17 @@ exports.doAction = async function (event, _context) {
             }, options);
 
             if (response && response.employees && response.employees.length > 0) {
-                response.employees = await mainData.batchGetItem({
+                const employees = await mainData.batchGetItem({
                     keys: response.employees.map(item => ({ id: { S: item.userId } })),
                     projectionExpression: 'id, username, firstName, lastName, email, phoneNumber, recordStatus, createdAt'
                 });
+
+                employees.forEach(p => {
+                    const realStatus = response.employees.filter(x => x.userId === p.id)[0];
+                    p.recordStatus = realStatus.recordStatus;
+                });
+
+                response.employees = employees;
             }
 
             return successResponse(response);
