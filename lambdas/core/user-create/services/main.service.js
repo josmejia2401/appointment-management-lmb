@@ -42,7 +42,7 @@ exports.doAction = async function (event, context) {
                     }
                 },
                 filterExpression: 'username=:username',
-                projectionExpression: 'userId',
+                projectionExpression: 'username',
                 limit: 1
             }, options);
 
