@@ -3,7 +3,7 @@ const { buildBadRequestError } = require('./global-exception-handler');
 
 const schema = Joi.object({
 
-    userId: Joi.string()
+    username: Joi.string()
         .max(50)
         .required(),
 

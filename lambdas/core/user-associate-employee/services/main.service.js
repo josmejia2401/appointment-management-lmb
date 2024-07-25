@@ -30,7 +30,7 @@ exports.doAction = async function (event, _context) {
             };
 
             const payload = {
-                userId: body.userId || "",
+                username: body.username || "",
                 recordStatus: findStatusById(body.recordStatus)?.id,
                 createdAt: new Date().toISOString()
             };
@@ -49,7 +49,25 @@ exports.doAction = async function (event, _context) {
                 projectionExpression: 'employees'
             }, options);
 
-            const index = response.employees.findIndex(p => p.userId === payload.userId);
+            const employee = await mainData.scan({
+                expressionAttributeNames: {
+                    "#username": "username"
+                },
+                expressionAttributeValues: {
+                    ":username": {
+                        S: payload.username
+                    }
+                },
+                filterExpression: "#username=:username",
+                limit: 1,
+                projectionExpression: 'id, username'
+            }, options);
+
+            if (employee.results.length === 0) {
+                return buildBadRequestError('El empleado no existe.');
+            }
+
+            const index = response.employees.findIndex(p => p.userId === employee.results[0].id);
             if (index !== -1) {
                 const exists = response.employees[index];
                 if (exists.recordStatus === payload.recordStatus) {
@@ -72,7 +90,7 @@ exports.doAction = async function (event, _context) {
                                     N: `${payload.recordStatus}`
                                 },
                                 userId: {
-                                    S: `${exists.userId}`
+                                    S: `${employee.results[0].id}`
                                 },
                                 createdAt: {
                                     S: `${exists.createdAt}`
@@ -101,7 +119,7 @@ exports.doAction = async function (event, _context) {
                                 {
                                     M: {
                                         userId: {
-                                            S: payload.userId
+                                            S: employee.results[0].id
                                         },
                                         recordStatus: {
                                             N: `${payload.recordStatus}`

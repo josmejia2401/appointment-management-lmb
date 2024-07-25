@@ -1,7 +1,8 @@
 const {
     DynamoDBClient,
     UpdateItemCommand,
-    GetItemCommand
+    GetItemCommand,
+    ScanCommand
 } = require("@aws-sdk/client-dynamodb");
 
 
@@ -131,7 +132,73 @@ async function updateItem(payload = {
 }
 
 
+
+async function scan(payload = {
+    expressionAttributeValues: {},
+    expressionAttributeNames: {},
+    projectionExpression: undefined,
+    filterExpression: undefined,
+    limit: undefined,
+    lastEvaluatedKey: undefined
+}, options = { requestId: '' }) {
+    try {
+
+        const params = {
+            ExpressionAttributeValues: payload.expressionAttributeValues,
+            ExpressionAttributeNames: payload.expressionAttributeNames,
+            ProjectionExpression: payload.projectionExpression,
+            FilterExpression: payload.filterExpression,
+            TableName: tableName,
+            Limit: payload.limit,
+            ExclusiveStartKey: payload.lastEvaluatedKey,
+        };
+
+        logger.info({
+            requestId: options.requestId,
+            message: JSON.stringify(params)
+        });
+
+        const results = [];
+        const outputData = {
+            results: [],
+            lastEvaluatedKey: undefined
+        };
+        const resultData = await client.send(new ScanCommand(params));
+
+        logger.info({
+            requestId: options.requestId,
+            message: resultData.Items?.length
+        });
+
+        if (resultData.LastEvaluatedKey) {
+            outputData.lastEvaluatedKey = {
+                id: resultData.LastEvaluatedKey.id.S,
+            };
+        }
+
+        if (resultData.Items && resultData.Items.length > 0) {
+            resultData.Items.forEach(element => {
+                const item = buildItem(element);
+                results.push(item);
+            });
+        }
+
+        outputData.results = results;
+
+        return outputData;
+    } catch (err) {
+        logger.error({
+            requestId: options.requestId,
+            message: err
+        });
+        throw err;
+    }
+}
+
+
+
 module.exports = {
     updateItem: updateItem,
-    getItem: getItem
+    getItem: getItem,
+    scan: scan
 }

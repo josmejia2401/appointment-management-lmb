@@ -24,7 +24,7 @@ resource "aws_iam_role_policy_attachment" "lambda_role_policy" {
 data "aws_iam_policy_document" "lambda_policy_document" {
   statement {
     actions = [
-      "dynamodb:UpdateItem", "dynamodb:GetItem"
+      "dynamodb:UpdateItem", "dynamodb:GetItem", "dynamodb:Scan"
     ]
     resources = [
       "arn:aws:dynamodb:${local.region_name}:${local.account_id}:table/tbl-${var.app_name}-users-${var.env}"
