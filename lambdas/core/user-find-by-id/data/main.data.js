@@ -1,6 +1,7 @@
 const {
     DynamoDBClient,
     GetItemCommand,
+    BatchGetItemCommand
 } = require("@aws-sdk/client-dynamodb");
 
 
@@ -83,6 +84,49 @@ async function getItem(payload = {
 }
 
 
+async function batchGetItem(payload = {
+    keys: [],
+    projectionExpression: ''
+}, options = { requestId: '' }) {
+    try {
+        const params = {};
+        params[`${tableName}`] = {
+            Keys: payload.keys,
+            ProjectionExpression: payload.projectionExpression,
+        };
+
+        logger.info({
+            requestId: options.requestId,
+            message: JSON.stringify(params)
+        });
+
+        const resultData = await client.send(new BatchGetItemCommand({ RequestItems: params }));
+
+        logger.info({
+            requestId: options.requestId,
+            message: resultData.Responses !== undefined
+        });
+
+        const results = [];
+
+        if (resultData.Responses) {
+            resultData.Responses[`${tableName}`].forEach(element => {
+                const item = buildItem(element);
+                results.push(item);
+            });
+        }
+
+        return results;
+    } catch (err) {
+        logger.error({
+            requestId: options.requestId,
+            message: err
+        });
+        throw err;
+    }
+}
+
 module.exports = {
     getItem: getItem,
+    batchGetItem: batchGetItem
 }

@@ -30,8 +30,16 @@ exports.doAction = async function (event, _context) {
                         S: `${pathParameters.id}`
                     },
                 },
-                projectionExpression: 'username, firstName, lastName, email, phoneNumber, documentType, documentNumber, recordStatus, createdAt, employees'
+                projectionExpression: 'username, firstName, lastName, email, phoneNumber, recordStatus, createdAt, employees'
             }, options);
+
+            if (response && response.employees && response.employees.length > 0) {
+                response.employees = await mainData.batchGetItem({
+                    keys: response.employees.map(item => ({ id: { S: item.userId } })),
+                    projectionExpression: 'id, username, firstName, lastName, email, phoneNumber, recordStatus, createdAt'
+                });
+            }
+
             return successResponse(response);
         } else {
             return buildBadRequestError('Al parecer la solicitud no es correcta. Intenta nuevamente, por favor.');
