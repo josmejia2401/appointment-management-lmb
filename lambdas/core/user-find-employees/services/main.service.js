@@ -46,7 +46,7 @@ exports.doAction = async function (event, _context) {
                 });
             }
 
-            return successResponse(response);
+            return successResponse(employees);
         } else {
             return buildBadRequestError('Al parecer la solicitud no es correcta. Intenta nuevamente, por favor.');
         }
