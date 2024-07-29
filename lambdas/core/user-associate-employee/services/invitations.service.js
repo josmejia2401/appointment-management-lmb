@@ -14,7 +14,7 @@ const logger = require('../lib/logger');
  */
 exports.doInvite = async function (employee, userId, recordStatus, traceID) {
     try {
-        logger.info({ message: employee, requestId: traceID });
+        logger.info({ message: employee, recordStatus: recordStatus, userId: userId, requestId: traceID });
 
 
         const options = {
@@ -24,7 +24,7 @@ exports.doInvite = async function (employee, userId, recordStatus, traceID) {
         //validar existencia de la empresa que invita al empleado esta asociada, si esta o no asociado.
         const index = employee.invitations.findIndex(p => p.userId === userId);
         if (index !== -1) {
-            const employeeFound = response.invitations[index];
+            const employeeFound = employee.invitations[index];
             // mismo estado, no hace nada.
             if (employeeFound.recordStatus === recordStatus) {
                 return;

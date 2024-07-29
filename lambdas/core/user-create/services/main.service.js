@@ -27,7 +27,8 @@ exports.doAction = async function (event, context) {
                 phoneNumber: body.phoneNumber,
                 recordStatus: findStatusById(1)?.id,
                 createdAt: new Date().toISOString(),
-                employees: []
+                employees: [],
+                invitations: []
             };
 
             const errorBadRequest = validatePayload(payload);

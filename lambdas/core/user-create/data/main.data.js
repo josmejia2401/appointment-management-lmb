@@ -12,21 +12,36 @@ const client = new DynamoDBClient({ apiVersion: "2012-08-10", region: constants.
 const tableName = `tbl-${constants.constants.APP_NAME}-users-${constants.constants.ENVIRONMENT}`;
 
 
+
 function buildItem(element) {
     if (element === undefined || element === null) {
         return undefined;
     }
 
     const employees = [];
+    const invitations = [];
 
-    if (element.employees && element.employees.L) {
+    if (element.employees && element.employees.L && element.employees.L.length > 0) {
         element.employees.L.forEach(local => {
+            const temp = local.M;
             const employee = {
-                userId: local.userId.S,
-                recordStatus: Number(local.recordStatus.N),
-                createdAt: local.createdAt.S,
+                userId: temp.userId.S,
+                recordStatus: Number(temp.recordStatus.N),
+                createdAt: temp.createdAt.S,
             };
             employees.push(employee);
+        });
+    }
+
+    if (element.invitations && element.invitations.L && element.invitations.L.length > 0) {
+        element.invitations.L.forEach(local => {
+            const temp = local.M;
+            const invitation = {
+                userId: temp.userId.S,
+                recordStatus: Number(temp.recordStatus.N),
+                createdAt: temp.createdAt.S,
+            };
+            invitations.push(invitation);
         });
     }
 
@@ -37,11 +52,15 @@ function buildItem(element) {
         lastName: element.lastName?.S,
         email: element.email?.S,
         phoneNumber: element.phoneNumber?.S,
+        documentType: Number(element.documentType?.N || 0),
+        documentNumber: element.documentNumber?.S,
         recordStatus: Number(element.recordStatus?.N),
         createdAt: element.createdAt?.S,
-        employees: employees
+        employees: employees,
+        invitations: invitations
     };
 }
+
 
 async function scan(payload = {
     expressionAttributeValues: {},
@@ -99,7 +118,8 @@ async function putItem(payload = {
     phoneNumber: '',
     recordStatus: 1,
     createdAt: '',
-    employees: []
+    employees: [],
+    invitations: []
 }, options = { requestId: '' }) {
     try {
         const params = {
@@ -136,6 +156,9 @@ async function putItem(payload = {
                 },
                 employees: {
                     L: payload.employees
+                },
+                invitations: {
+                    L: payload.invitations
                 },
             },
         };

@@ -137,6 +137,17 @@ module "api_gateway_resources_core_user_find_invitations" {
   ]
 }
 
+
+module "api_gateway_resources_core_user_update_invitation" {
+  source        = "./modules/apigateway-resources-core-user-update-invitation"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.users_dynamodb
+  ]
+}
+
 ####################
 # API GATEWAY RESOURCES SERVICES
 ####################

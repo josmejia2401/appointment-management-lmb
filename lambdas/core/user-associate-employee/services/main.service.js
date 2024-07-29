@@ -1,6 +1,6 @@
 
 const mainData = require('../data/main.data');
-const { buildInternalError, buildBadRequestError } = require('../lib/global-exception-handler');
+const { buildInternalError, buildBadRequestError, buildForbiddenError } = require('../lib/global-exception-handler');
 const { findStatusById } = require('../lib/list_values');
 const { successResponse } = require('../lib/response-handler');
 const { getTraceID } = require('../lib/util');
@@ -75,10 +75,19 @@ exports.doAction = async function (event, _context) {
                 if (employeeFound.recordStatus === payload.recordStatus) {
                     return buildBadRequestError('¡Ups! El empleado ya fue asociado.');
                 }
+
+                // Si el usuario no pretende eliminar la asociación, entonces no se puede actualizar.
+                if (employeeFound.recordStatus === 3 && payload.recordStatus !== 4) {
+                    return buildBadRequestError('¡Ups! El usuario no ha aceptado la invitación, por lo tanto no puede cambiar de estado.');
+                }
+                // Solo puede pasar a activo, si:
+                // 1. El estado actual es INACTIVO
+                if (employeeFound.recordStatus !== 2 && payload.recordStatus === 1) {
+                    return buildBadRequestError('¡Ups! Estás intentando realizar una operación no permitida.');
+                }
                 // si el estado actual es eliminado, solo puede pasar a PENDIENTE.
-                if (employeeFound.recordStatus === 4) {
-                    // El empleado debe aprobar la invitación de unirse al equipo.
-                    payload.recordStatus = 3;
+                if (employeeFound.recordStatus === 4 && payload.recordStatus !== 3) {
+                    return buildBadRequestError('Solo puede pasar a estado PENDIENTE.');
                 }
                 await mainData.updateItem({
                     key: {
