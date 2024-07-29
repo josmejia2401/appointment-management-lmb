@@ -12,7 +12,6 @@ const client = new DynamoDBClient({ apiVersion: "2012-08-10", region: constants.
 const tableName = `tbl-${constants.constants.APP_NAME}-users-${constants.constants.ENVIRONMENT}`;
 
 
-
 function buildItem(element) {
     if (element === undefined || element === null) {
         return undefined;
@@ -60,7 +59,6 @@ function buildItem(element) {
         invitations: invitations
     };
 }
-
 
 async function getItem(payload = {
     key: {

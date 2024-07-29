@@ -115,6 +115,28 @@ module "api_gateway_resources_core_user_associate-employee" {
   ]
 }
 
+
+module "api_gateway_resources_core_user_find_employees" {
+  source        = "./modules/apigateway-resources-core-user-find-employees"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.users_dynamodb
+  ]
+}
+
+
+module "api_gateway_resources_core_user_find_invitations" {
+  source        = "./modules/apigateway-resources-core-user-find-invitations"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.users_dynamodb
+  ]
+}
+
 ####################
 # API GATEWAY RESOURCES SERVICES
 ####################

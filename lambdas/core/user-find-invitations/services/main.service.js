@@ -30,8 +30,21 @@ exports.doAction = async function (event, _context) {
                         S: `${pathParameters.id}`
                     },
                 },
-                projectionExpression: 'username, firstName, lastName, email, phoneNumber, recordStatus, createdAt'
+                projectionExpression: 'invitations'
             }, options);
+
+            let invitations = [];
+            if (response && response.invitations && response.invitations.length > 0) {
+                invitations = await mainData.batchGetItem({
+                    keys: response.invitations.map(item => ({ id: { S: item.userId } })),
+                    projectionExpression: 'id, username, firstName, lastName, email, phoneNumber, recordStatus, createdAt'
+                });
+
+                invitations.forEach(p => {
+                    const realStatus = response.invitations.filter(x => x.userId === p.id)[0];
+                    p.recordStatus = realStatus.recordStatus;
+                });
+            }
 
             return successResponse(response);
         } else {

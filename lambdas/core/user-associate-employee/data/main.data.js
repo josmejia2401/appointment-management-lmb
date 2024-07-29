@@ -19,6 +19,7 @@ function buildItem(element) {
     }
 
     const employees = [];
+    const invitations = [];
 
     if (element.employees && element.employees.L && element.employees.L.length > 0) {
         element.employees.L.forEach(local => {
@@ -32,6 +33,18 @@ function buildItem(element) {
         });
     }
 
+    if (element.invitations && element.invitations.L && element.invitations.L.length > 0) {
+        element.invitations.L.forEach(local => {
+            const temp = local.M;
+            const invitation = {
+                userId: temp.userId.S,
+                recordStatus: Number(temp.recordStatus.N),
+                createdAt: temp.createdAt.S,
+            };
+            invitations.push(invitation);
+        });
+    }
+
     return {
         id: element.id?.S,
         username: element.username?.S,
@@ -39,11 +52,12 @@ function buildItem(element) {
         lastName: element.lastName?.S,
         email: element.email?.S,
         phoneNumber: element.phoneNumber?.S,
-        documentType: Number(element.documentType?.N),
+        documentType: Number(element.documentType?.N || 0),
         documentNumber: element.documentNumber?.S,
         recordStatus: Number(element.recordStatus?.N),
         createdAt: element.createdAt?.S,
-        employees: employees
+        employees: employees,
+        invitations: invitations
     };
 }
 

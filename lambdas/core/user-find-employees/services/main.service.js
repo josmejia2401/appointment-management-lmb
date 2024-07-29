@@ -30,8 +30,21 @@ exports.doAction = async function (event, _context) {
                         S: `${pathParameters.id}`
                     },
                 },
-                projectionExpression: 'username, firstName, lastName, email, phoneNumber, recordStatus, createdAt'
+                projectionExpression: 'employees'
             }, options);
+
+            let employees = [];
+            if (response && response.employees && response.employees.length > 0) {
+                employees = await mainData.batchGetItem({
+                    keys: response.employees.map(item => ({ id: { S: item.userId } })),
+                    projectionExpression: 'id, username, firstName, lastName, email, phoneNumber, recordStatus, createdAt'
+                });
+
+                employees.forEach(p => {
+                    const realStatus = response.employees.filter(x => x.userId === p.id)[0];
+                    p.recordStatus = realStatus.recordStatus;
+                });
+            }
 
             return successResponse(response);
         } else {

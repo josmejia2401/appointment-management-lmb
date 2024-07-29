@@ -7,6 +7,7 @@ const { getTraceID } = require('../lib/util');
 const logger = require('../lib/logger');
 const { validatePayload } = require('../lib/schema');
 const { JWT } = require('../lib/jwt');
+const { doInvite } = require('./invitations.service');
 
 exports.doAction = async function (event, _context) {
     const traceID = getTraceID(event.headers || {});
@@ -32,7 +33,6 @@ exports.doAction = async function (event, _context) {
             const payload = {
                 username: body.username || "",
                 recordStatus: findStatusById(body.recordStatus)?.id,
-                createdAt: new Date().toISOString()
             };
 
             const errorBadRequest = validatePayload(payload);
@@ -40,7 +40,7 @@ exports.doAction = async function (event, _context) {
                 return errorBadRequest;
             }
 
-            const response = await mainData.getItem({
+            const user = await mainData.getItem({
                 key: {
                     id: {
                         S: `${pathParameters.id}`
@@ -60,20 +60,26 @@ exports.doAction = async function (event, _context) {
                 },
                 filterExpression: "#username=:username",
                 limit: 1,
-                projectionExpression: 'id, username'
+                projectionExpression: 'id, username, invitations'
             }, options);
 
             if (employee.results.length === 0) {
-                return buildBadRequestError('El empleado no existe.');
+                return buildBadRequestError('¡Ups! El empleado no existe.');
             }
 
-            const index = response.employees.findIndex(p => p.userId === employee.results[0].id);
+            //validar existencia del empleado a asociar, si esta o no asociado.
+            const index = user.employees.findIndex(p => p.userId === employee.results[0].id);
             if (index !== -1) {
-                const exists = response.employees[index];
-                if (exists.recordStatus === payload.recordStatus) {
-                    return buildBadRequestError('El empleado ya fue asociado.');
+                const employeeFound = user.employees[index];
+                // mismo estado, no hace nada.
+                if (employeeFound.recordStatus === payload.recordStatus) {
+                    return buildBadRequestError('¡Ups! El empleado ya fue asociado.');
                 }
-                // from: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html
+                // si el estado actual es eliminado, solo puede pasar a PENDIENTE.
+                if (employeeFound.recordStatus === 4) {
+                    // El empleado debe aprobar la invitación de unirse al equipo.
+                    payload.recordStatus = 3;
+                }
                 await mainData.updateItem({
                     key: {
                         id: {
@@ -93,7 +99,7 @@ exports.doAction = async function (event, _context) {
                                     S: `${employee.results[0].id}`
                                 },
                                 createdAt: {
-                                    S: `${exists.createdAt}`
+                                    S: `${new Date().toISOString()}`
                                 }
                             }
                         }
@@ -102,8 +108,9 @@ exports.doAction = async function (event, _context) {
                     conditionExpression: undefined,
                     filterExpression: "attribute_exists(username)"
                 }, options);
-
+                // from: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Expressions.UpdateExpressions.html
             } else {
+                // se invita al empleado a formar parte del equipo.
                 await mainData.updateItem({
                     key: {
                         id: {
@@ -122,10 +129,10 @@ exports.doAction = async function (event, _context) {
                                             S: employee.results[0].id
                                         },
                                         recordStatus: {
-                                            N: `${payload.recordStatus}`
+                                            N: '3', //Por defecto el estado es PENDIENTE.
                                         },
                                         createdAt: {
-                                            S: payload.createdAt
+                                            S: `${new Date().toISOString()}`
                                         }
                                     }
                                 }
@@ -137,6 +144,10 @@ exports.doAction = async function (event, _context) {
                     filterExpression: "attribute_exists(username)"
                 }, options);
             }
+
+            //Actualiza la invitación: Activa, inactiva y elimina.
+            await doInvite(employee.results[0], pathParameters.id, payload.recordStatus, traceID);
+
             return successResponse(body);
         } else {
             return buildBadRequestError('Al parecer la solicitud no es correcta. Intenta nuevamente, por favor.');
