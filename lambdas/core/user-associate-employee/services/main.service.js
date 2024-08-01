@@ -59,7 +59,7 @@ exports.doAction = async function (event, _context) {
                     }
                 },
                 filterExpression: "#username=:username",
-                limit: 1,
+                limit: undefined,
                 projectionExpression: 'id, username, invitations'
             }, options);
 
