@@ -28,11 +28,11 @@ exports.doAction = async function (event, context) {
 
                 firstName: body.firstName,
                 lastName: body.lastName,
-                email: body.email,
-                phoneNumber: body.phoneNumber,
-                documentType: findDocumentTypeById(body.documentType)?.id,
-                documentNumber: body.documentNumber,
-                birthday: body.birthday,
+                email: body.email || "",
+                phoneNumber: body.phoneNumber || "",
+                documentType: findDocumentTypeById(body.documentType)?.id || 0,
+                documentNumber: body.documentNumber || "",
+                birthday: body.birthday || "",
 
                 gender: findGenderById(body.gender)?.id,
                 recordStatus: findStatusById(1)?.id,

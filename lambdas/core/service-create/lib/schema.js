@@ -11,7 +11,7 @@ const schema = Joi.object({
         .required(),
 
     description: Joi.string()
-        .max(150).optional(),
+        .max(150).allow('').optional(),
 
     duration: Joi.number(),
 

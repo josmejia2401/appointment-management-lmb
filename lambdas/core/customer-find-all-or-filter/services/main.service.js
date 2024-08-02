@@ -11,94 +11,92 @@ exports.doAction = async function (event, _context) {
     try {
         logger.info({ message: JSON.stringify(event), requestId: traceID });
         //queryStringParameters
-        if (event.queryStringParameters !== undefined && event.queryStringParameters !== null) {
-            const queryStringParameters = event.queryStringParameters;
+        const queryStringParameters = event.queryStringParameters;
 
-            const authorization = event.headers?.Authorization || event.headers?.authorization;
-            const tokenDecoded = JWT.decodeToken(authorization);
 
-            const options = {
-                requestId: traceID
+
+        const authorization = event.headers?.Authorization || event.headers?.authorization;
+        const tokenDecoded = JWT.decodeToken(authorization);
+
+        const options = {
+            requestId: traceID
+        };
+
+        let filterExpression = '#userId=:userId';
+
+        const expressionAttributeValues = {
+            ":userId": {
+                "S": `${tokenDecoded?.keyid}`
+            }
+        };
+
+        const expressionAttributeNames = {
+            "#userId": "userId"
+        };
+
+        if (queryStringParameters && queryStringParameters.firstName) {
+            expressionAttributeValues[":firstName"] = {
+                "S": queryStringParameters.firstName
             };
-
-            let filterExpression = '#userId=:userId';
-
-            const expressionAttributeValues = {
-                ":userId": {
-                    "S": `${tokenDecoded?.keyid}`
-                }
-            };
-
-            const expressionAttributeNames = {
-                "#userId": "userId"
-            };
-
-            if (queryStringParameters.firstName) {
-                expressionAttributeValues[":firstName"] = {
-                    "S": queryStringParameters.firstName
-                };
-                expressionAttributeNames["#firstName"] = "firstName";
-                filterExpression = `${filterExpression} AND contains(#firstName,:firstName)`;
-            }
-            
-            if (queryStringParameters.lastName) {
-                expressionAttributeValues[":lastName"] = {
-                    "S": queryStringParameters.lastName
-                };
-                expressionAttributeNames["#lastName"] = "lastName";
-                filterExpression = `${filterExpression} AND contains(#lastName,:lastName)`;
-            }
-
-            if (queryStringParameters.recordStatus) {
-                expressionAttributeValues[":recordStatus"] = {
-                    "N": `${queryStringParameters.recordStatus}`
-                };
-                expressionAttributeNames["#recordStatus"] = "recordStatus";
-                filterExpression = `${filterExpression} AND #recordStatus=:recordStatus`;
-            }
-
-
-            if (queryStringParameters.documentType) {
-                expressionAttributeValues[":documentType"] = {
-                    "N": `${queryStringParameters.documentType}`
-                };
-                expressionAttributeNames["#documentType"] = "documentType";
-                filterExpression = `${filterExpression} AND #documentType=:documentType`;
-            }
-
-            if (queryStringParameters.documentNumber) {
-                expressionAttributeValues[":documentNumber"] = {
-                    "S": `${queryStringParameters.documentNumber}`
-                };
-                expressionAttributeNames["#documentNumber"] = "documentNumber";
-                filterExpression = `${filterExpression} AND #documentNumber=:documentNumber`;
-            }
-
-            let lastEvaluatedKey = undefined;
-            // solo se usan para la siguiente llave
-            if (queryStringParameters.userId && queryStringParameters.id) {
-                lastEvaluatedKey = {
-                    userId: {
-                        S: queryStringParameters.userId
-                    },
-                    id: {
-                        S: queryStringParameters.id
-                    }
-                }
-            }
-
-            const response = await mainData.scan({
-                expressionAttributeValues: expressionAttributeValues,
-                expressionAttributeNames: expressionAttributeNames,
-                projectionExpression: undefined,
-                filterExpression: filterExpression,
-                limit: 10,
-                lastEvaluatedKey: lastEvaluatedKey
-            }, options);
-            return successResponse(response);
-        } else {
-            return buildBadRequestError('Al parecer la solicitud no es correcta. Intenta nuevamente, por favor.');
+            expressionAttributeNames["#firstName"] = "firstName";
+            filterExpression = `${filterExpression} AND contains(#firstName,:firstName)`;
         }
+
+        if (queryStringParameters && queryStringParameters.lastName) {
+            expressionAttributeValues[":lastName"] = {
+                "S": queryStringParameters.lastName
+            };
+            expressionAttributeNames["#lastName"] = "lastName";
+            filterExpression = `${filterExpression} AND contains(#lastName,:lastName)`;
+        }
+
+        if (queryStringParameters && queryStringParameters.recordStatus) {
+            expressionAttributeValues[":recordStatus"] = {
+                "N": `${queryStringParameters.recordStatus}`
+            };
+            expressionAttributeNames["#recordStatus"] = "recordStatus";
+            filterExpression = `${filterExpression} AND #recordStatus=:recordStatus`;
+        }
+
+
+        if (queryStringParameters && queryStringParameters.documentType) {
+            expressionAttributeValues[":documentType"] = {
+                "N": `${queryStringParameters.documentType}`
+            };
+            expressionAttributeNames["#documentType"] = "documentType";
+            filterExpression = `${filterExpression} AND #documentType=:documentType`;
+        }
+
+        if (queryStringParameters && queryStringParameters.documentNumber) {
+            expressionAttributeValues[":documentNumber"] = {
+                "S": `${queryStringParameters.documentNumber}`
+            };
+            expressionAttributeNames["#documentNumber"] = "documentNumber";
+            filterExpression = `${filterExpression} AND #documentNumber=:documentNumber`;
+        }
+
+        let lastEvaluatedKey = undefined;
+        // solo se usan para la siguiente llave
+        if (queryStringParameters && queryStringParameters.userId && queryStringParameters.id) {
+            lastEvaluatedKey = {
+                userId: {
+                    S: queryStringParameters.userId
+                },
+                id: {
+                    S: queryStringParameters.id
+                }
+            }
+        }
+
+        const response = await mainData.scan({
+            expressionAttributeValues: expressionAttributeValues,
+            expressionAttributeNames: expressionAttributeNames,
+            projectionExpression: undefined,
+            filterExpression: filterExpression,
+            limit: 10,
+            lastEvaluatedKey: lastEvaluatedKey
+        }, options);
+        return successResponse(response);
     } catch (err) {
         logger.error({ message: err, requestId: traceID });
         return buildInternalError("No pudimos realizar la solicitud. Intenta más tarde, por favor.")
