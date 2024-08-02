@@ -13,11 +13,17 @@ const schema = Joi.object({
 
     email: Joi.string()
         .email()
-        .required(),
+        .allow('')
+        .optional(),
 
     phoneNumber: Joi.string()
         .max(15)
-        .required(),
+        .allow('').optional(),
+
+    documentType: Joi.number().optional(),
+
+    documentNumber: Joi.string()
+        .max(25).allow('').optional(),
 
 });
 

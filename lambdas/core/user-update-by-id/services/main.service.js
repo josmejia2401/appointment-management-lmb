@@ -1,7 +1,7 @@
 
 const mainData = require('../data/main.data');
 const { buildInternalError, buildBadRequestError } = require('../lib/global-exception-handler');
-const { findStatusById, findDocumentTypeById, findGenderById } = require('../lib/list_values');
+const { findStatusById, findDocumentTypeById, findGenderById, documentTypes } = require('../lib/list_values');
 const { successResponse } = require('../lib/response-handler');
 const { getTraceID } = require('../lib/util');
 const logger = require('../lib/logger');
@@ -34,6 +34,9 @@ exports.doAction = async function (event, _context) {
 
                 email: body.email || "",
                 phoneNumber: body.phoneNumber || "",
+
+                documentType: payload.documentType || 0,
+                documentNumber: payload.documentNumber || ""
             };
 
             const errorBadRequest = validatePayload(payload);

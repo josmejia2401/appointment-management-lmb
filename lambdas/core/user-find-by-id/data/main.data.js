@@ -57,7 +57,9 @@ function buildItem(element) {
         recordStatus: Number(element.recordStatus?.N),
         createdAt: element.createdAt?.S,
         employees: employees,
-        invitations: invitations
+        invitations: invitations,
+        documentType: Number(element.documentType?.N),
+        documentNumber: element.documentNumber?.S,
     };
 }
 

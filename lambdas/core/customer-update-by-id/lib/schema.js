@@ -11,22 +11,20 @@ const schema = Joi.object({
         .max(100)
         .required(),
 
+
     email: Joi.string()
-        .email()
-        .required(),
+        .email().allow('').optional(),
 
     phoneNumber: Joi.string()
         .max(15)
-        .required(),
+        .allow('').optional(),
 
-    documentType: Joi.number()
-        .required(),
+    documentType: Joi.number().allow('').optional(),
 
-    documentNumber: Joi.number()
-        .required(),
+    documentNumber: Joi.number().allow('').optional(),
 
-    birthday: Joi.date()
-        .required(),
+    birthday: Joi.date().allow('').optional(),
+
 
     gender: Joi.number()
         .required(),

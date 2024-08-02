@@ -57,7 +57,10 @@ function buildItem(element) {
         recordStatus: Number(element.recordStatus?.N),
         createdAt: element.createdAt?.S,
         employees: employees,
-        invitations: invitations
+        invitations: invitations,
+
+        documentType: Number(element.documentType?.N),
+        documentNumber: element.documentNumber?.S,
     };
 }
 
@@ -118,6 +121,10 @@ async function putItem(payload = {
     phoneNumber: '',
     recordStatus: 1,
     createdAt: '',
+
+    documentType: 0,
+    documentNumber: '',
+
     employees: [],
     invitations: []
 }, options = { requestId: '' }) {
@@ -154,6 +161,14 @@ async function putItem(payload = {
                 createdAt: {
                     S: payload.createdAt
                 },
+
+                documentType: {
+                    N: `${payload.documentType}`
+                },
+                documentNumber: {
+                    S: payload.documentNumber
+                },
+
                 employees: {
                     L: payload.employees
                 },

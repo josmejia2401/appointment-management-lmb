@@ -27,6 +27,9 @@ exports.doAction = async function (event, context) {
                 phoneNumber: body.phoneNumber,
                 recordStatus: findStatusById(1)?.id,
                 createdAt: new Date().toISOString(),
+
+                documentType: 0,
+                documentNumber: '',
                 employees: [],
                 invitations: []
             };
