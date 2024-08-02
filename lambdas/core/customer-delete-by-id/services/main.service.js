@@ -19,7 +19,7 @@ exports.doAction = async function (event, _context) {
             const options = {
                 requestId: traceID
             };
-            await mainData.deleteItem({
+            await mainData.updateItem({
                 key: {
                     id: {
                         S: `${pathParameters.id}`
@@ -28,6 +28,17 @@ exports.doAction = async function (event, _context) {
                         S: `${tokenDecoded?.keyid}`
                     }
                 },
+                expressionAttributeNames: {
+                    "#recordStatus": "recordStatus",
+                },
+                expressionAttributeValues: {
+                    ":recordStatus": {
+                        "N": "4"
+                    },
+                },
+                updateExpression: "SET #recordStatus=:recordStatus",
+                conditionExpression: undefined,
+                filterExpression: "attribute_exists(userId)"
             }, options);
             return successResponse(pathParameters);
         } else {

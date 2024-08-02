@@ -1,6 +1,6 @@
 const {
     DynamoDBClient,
-    DeleteItemCommand,
+    UpdateItemCommand,
 } = require("@aws-sdk/client-dynamodb");
 
 
@@ -10,7 +10,8 @@ const logger = require('../lib/logger');
 const client = new DynamoDBClient({ apiVersion: "2012-08-10", region: constants.constants.REGION });
 const tableName = `tbl-${constants.constants.APP_NAME}-customers-${constants.constants.ENVIRONMENT}`;
 
-async function deleteItem(payload = {
+
+async function updateItem(payload = {
     key: {
         id: {
             S: ''
@@ -19,23 +20,34 @@ async function deleteItem(payload = {
             S: ''
         }
     },
+    updateExpression: '',
+    expressionAttributeNames: {},
+    expressionAttributeValues: {},
+    conditionExpression: '',
+    filterExpression: ''
 }, options = { requestId: '' }) {
     try {
         const params = {
             TableName: tableName,
             Key: payload.key,
+            UpdateExpression: payload.updateExpression,
+            ExpressionAttributeNames: payload.expressionAttributeNames,
+            ExpressionAttributeValues: payload.expressionAttributeValues,
+            ConditionExpression: payload.conditionExpression,
+            FilterExpression: payload.filterExpression,
+            ReturnValues: "ALL_NEW"
         };
-
-        logger.debug({
-            requestId: options.requestId,
-            message: params
-        });
-
-        const resultData = await client.send(new DeleteItemCommand(params));
 
         logger.info({
             requestId: options.requestId,
-            message: resultData.Item !== undefined
+            message: JSON.stringify(params)
+        });
+
+        const resultData = await client.send(new UpdateItemCommand(params));
+
+        logger.info({
+            requestId: options.requestId,
+            message: resultData
         });
 
         return resultData;
@@ -49,6 +61,7 @@ async function deleteItem(payload = {
 }
 
 
+
 module.exports = {
-    deleteItem: deleteItem,
+    updateItem: updateItem,
 }
