@@ -1,7 +1,7 @@
 
 const customersData = require('../data/customers.data');
 const { buildInternalError, buildBadRequestError } = require('../lib/global-exception-handler');
-const { findStatusById, findDocumentTypeById, findGenderById, documentTypes } = require('../lib/list_values');
+const { findStatusById, findDocumentTypeById, findGenderById, findMaritalStatusById } = require('../lib/list_values');
 const { successResponse } = require('../lib/response-handler');
 const { buildUuid, getTraceID } = require('../lib/util');
 const logger = require('../lib/logger');
@@ -19,7 +19,7 @@ exports.doAction = async function (event, context) {
             const tokenDecoded = JWT.decodeToken(authorization);
 
             const options = {
-                requestId: context.awsRequestId
+                requestId: traceID
             };
             const id = buildUuid();
             const payload = {
@@ -33,32 +33,16 @@ exports.doAction = async function (event, context) {
                 documentType: findDocumentTypeById(body.documentType)?.id || 0,
                 documentNumber: body.documentNumber || "",
                 birthday: body.birthday || "",
+                gender: findGenderById(body.gender)?.id || 0,
 
-                gender: findGenderById(body.gender)?.id,
+                maritalStatus: findMaritalStatusById(body.maritalStatus)?.id || 0,
+                occupation: body.occupation || "",
+                address: body.address || "",
+                notes: body.notes || "",
+
                 recordStatus: findStatusById(1)?.id,
                 createdAt: new Date().toISOString()
             };
-
-            const userFounded = await customersData.scan({
-                expressionAttributeValues: {
-                    ':documentType': {
-                        N: `${payload.documentType}`
-                    },
-                    ':documentNumber': {
-                        S: `${payload.documentNumber}`
-                    },
-                    ':userId': {
-                        S: `${payload.userId}`
-                    }
-                },
-                filterExpression: 'documentType=:documentType AND documentNumber=:documentNumber AND userId=:userId',
-                projectionExpression: 'userId',
-                limit: 1
-            }, options);
-
-            if (userFounded.length > 0) {
-                return buildBadRequestError('Al parecer el usuario ya existe. Verifica los datos, por favor.');
-            }
 
             const errorBadRequest = validatePayload(payload);
             if (errorBadRequest) {

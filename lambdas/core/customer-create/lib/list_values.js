@@ -77,3 +77,34 @@ exports.genders = genders;
 exports.findGenderById = function (id) {
     return genders.filter(p => p.id === Number(id))[0];
 }
+
+
+
+const maritalStatus = [
+    {
+        id: 1,
+        name: 'Soltero/a'
+    },
+    {
+        id: 2,
+        name: 'Casado/a'
+    },
+    {
+        id: 3,
+        name: 'Divorciado/a'
+    },
+    {
+        id: 4,
+        name: 'Viudo/a'
+    },
+    {
+        id: 5,
+        name: 'Otro/a'
+    }
+];
+
+exports.maritalStatus = maritalStatus;
+
+exports.findMaritalStatusById = function (id) {
+    return maritalStatus.filter(p => p.id === Number(id))[0];
+}

@@ -30,53 +30,14 @@ function buildItem(element) {
         firstName: element.firstName?.S,
         gender: Number(element.gender?.N),
         recordStatus: Number(element.recordStatus?.N),
+
+        maritalStatus: Number(element.maritalStatus?.N),
+        occupation: element.occupation?.S,
+        address: element.address?.S,
+        notes: element.notes?.S,
+
         createdAt: element.createdAt?.S,
     };
-}
-
-async function scan(payload = {
-    expressionAttributeValues: {},
-    projectionExpression: undefined,
-    filterExpression: undefined,
-    limit: undefined
-}, options = { requestId: '' }) {
-    try {
-        const params = {
-            ExpressionAttributeValues: payload.expressionAttributeValues,
-            ProjectionExpression: payload.projectionExpression,
-            FilterExpression: payload.filterExpression,
-            TableName: tableName,
-            Limit: payload.limit
-        };
-
-        logger.debug({
-            requestId: options.requestId,
-            message: JSON.stringify(params)
-        });
-
-        const results = [];
-        const resultData = await client.send(new ScanCommand(params));
-
-        logger.info({
-            requestId: options.requestId,
-            message: resultData.Items?.length
-        });
-
-        if (resultData.Items && resultData.Items.length > 0) {
-            resultData.Items.forEach(element => {
-                const item = buildItem(element);
-                results.push(item);
-            });
-        }
-
-        return results;
-    } catch (err) {
-        logger.error({
-            requestId: options.requestId,
-            message: err
-        });
-        throw err;
-    }
 }
 
 
@@ -91,6 +52,12 @@ async function putItem(payload = {
     documentNumber: '',
     birthday: '',
     gender: 0,
+
+    maritalStatus: 0,
+    occupation: '',
+    address: '',
+    notes: '',
+
     recordStatus: 1,
     createdAt: '',
 }, options = { requestId: '' }) {
@@ -133,6 +100,21 @@ async function putItem(payload = {
                 recordStatus: {
                     N: `${payload.recordStatus}`
                 },
+
+                maritalStatus: {
+                    N: `${payload.recordStatus}`
+                },
+                occupation: {
+                    S: payload.occupation
+                },
+                address: {
+                    S: payload.address
+                },
+                notes: {
+                    S: payload.notes
+                },
+
+
                 createdAt: {
                     S: payload.createdAt
                 },
@@ -163,6 +145,5 @@ async function putItem(payload = {
 
 
 module.exports = {
-    scan: scan,
     putItem: putItem
 }

@@ -2,26 +2,17 @@ const Joi = require('joi');
 const { buildBadRequestError } = require('./global-exception-handler');
 
 const schema = Joi.object({
-    id: Joi.string()
-        .required(),
+    id: Joi.string().required(),
 
-    userId: Joi.string()
-        .required(),
+    userId: Joi.string().required(),
 
-    firstName: Joi.string()
-        .max(100)
-        .required(),
+    firstName: Joi.string().max(100).required(),
 
-    lastName: Joi.string()
-        .max(100)
-        .required(),
+    lastName: Joi.string().max(100).required(),
 
-    email: Joi.string()
-        .email().allow('').optional(),
+    email: Joi.string().email().allow('').optional(),
 
-    phoneNumber: Joi.string()
-        .max(15)
-        .allow('').optional(),
+    phoneNumber: Joi.string().max(15).allow('').optional(),
 
     documentType: Joi.number().allow('').optional(),
 
@@ -29,14 +20,20 @@ const schema = Joi.object({
 
     birthday: Joi.date().allow('').optional(),
 
-    gender: Joi.number()
-        .required(),
+    gender: Joi.number(),
 
-    recordStatus: Joi.number()
-        .required(),
+    maritalStatus: Joi.number(),
 
-    createdAt: Joi.date()
-        .required()
+    occupation: Joi.string().allow('').max(75).required(),
+
+    address: Joi.string().allow('').max(100).required(),
+
+    notes: Joi.string().allow('').max(150).required(),
+
+
+    recordStatus: Joi.number().required(),
+    
+    createdAt: Joi.date().required()
 
 });
 
