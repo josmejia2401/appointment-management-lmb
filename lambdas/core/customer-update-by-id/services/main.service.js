@@ -7,7 +7,7 @@ const { getTraceID } = require('../lib/util');
 const logger = require('../lib/logger');
 const { validatePayload } = require('../lib/schema');
 const { JWT } = require('../lib/jwt');
-const { findMaritalStatusById } = require('../../customer-create/lib/list_values');
+const { findMaritalStatusById } = require('../lib/list_values');
 
 exports.doAction = async function (event, _context) {
     const traceID = getTraceID(event.headers || {});
@@ -25,8 +25,6 @@ exports.doAction = async function (event, _context) {
                 requestId: traceID
             };
             const payload = {
-                id: id,
-                userId: tokenDecoded?.keyid || "",
 
                 firstName: body.firstName,
                 lastName: body.lastName,
