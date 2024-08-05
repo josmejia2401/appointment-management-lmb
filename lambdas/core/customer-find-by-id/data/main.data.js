@@ -29,6 +29,11 @@ function buildItem(element) {
         gender: Number(element.gender?.N),
         recordStatus: Number(element.recordStatus?.N),
         createdAt: element.createdAt?.S,
+
+        maritalStatus: Number(element.maritalStatus?.N),
+        occupation: element.occupation?.S,
+        address: element.address?.S,
+        notes: element.notes?.S,
     };
 }
 
