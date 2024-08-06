@@ -28,6 +28,7 @@ exports.doAction = async function (event, context) {
                 name: body.name || "",
                 description: body.description || "",
                 duration: Number(body.duration || 0),
+                pricing: Number(body.pricing || 0),
                 recordStatus: findStatusById(1)?.id,
                 createdAt: new Date().toISOString()
             };

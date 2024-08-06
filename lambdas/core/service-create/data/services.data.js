@@ -21,6 +21,7 @@ function buildItem(element) {
         name: element.name?.S,
         description: element.description?.S,
         duration: Number(element.duration?.N),
+        pricing: Number(element.pricing?.N),
         recordStatus: Number(element.recordStatus?.N),
         createdAt: element.createdAt?.S,
     };
@@ -33,6 +34,7 @@ async function putItem(payload = {
     name: '',
     description: '',
     duration: 0,
+    pricing: 0,
     recordStatus: '',
     createdAt: ''
 }, options = { requestId: '' }) {
@@ -54,6 +56,9 @@ async function putItem(payload = {
                 },
                 duration: {
                     N: `${payload.duration}`
+                },
+                pricing: {
+                    N: `${payload.pricing}`
                 },
                 recordStatus: {
                     N: `${payload.recordStatus}`

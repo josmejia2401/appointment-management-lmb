@@ -47,6 +47,7 @@ exports.doAction = async function (event, _context) {
                     "#name": "name",
                     "#description": "description",
                     "#duration": "duration",
+                    "#pricing": "pricing",
                     "#recordStatus": "recordStatus",
                 },
                 expressionAttributeValues: {
@@ -59,11 +60,14 @@ exports.doAction = async function (event, _context) {
                     ":duration": {
                         "N": `${payload.duration}`
                     },
+                    ":pricing": {
+                        "N": `${payload.pricing}`
+                    },
                     ":recordStatus": {
                         "N": `${payload.recordStatus}`
                     },
                 },
-                updateExpression: "SET #name=:name, #description=:description, #duration=:duration, #recordStatus=:recordStatus",
+                updateExpression: "SET #name=:name, #description=:description, #duration=:duration, #pricing=:pricing, #recordStatus=:recordStatus",
                 conditionExpression: undefined,
                 filterExpression: "attribute_exists(userId)"
             }, options);

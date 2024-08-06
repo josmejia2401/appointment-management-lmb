@@ -22,6 +22,7 @@ function buildItem(element) {
         description: element.description?.S,
         duration: Number(element.duration?.N),
         recordStatus: Number(element.recordStatus?.N),
+        pricing: Number(element.pricing?.N),
         createdAt: element.createdAt?.S,
     };
 }
