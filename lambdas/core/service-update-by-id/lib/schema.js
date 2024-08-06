@@ -13,8 +13,6 @@ const schema = Joi.object({
 
     recordStatus: Joi.number().required(),
 
-    createdAt: Joi.date().required()
-
 });
 
 exports.validatePayload = function (payload) {
