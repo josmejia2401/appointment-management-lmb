@@ -1,8 +1,5 @@
 const {
     DynamoDBClient,
-    ScanCommand,
-    QueryCommand,
-    PutItemCommand,
     GetItemCommand,
     DeleteItemCommand,
 } = require("@aws-sdk/client-dynamodb");
@@ -25,150 +22,6 @@ function buildItem(element) {
         createdAt: element.createdAt.S,
     };
 }
-
-
-/**
- * 
- * @param {*} payload 
- */
-async function query(payload = {
-    expressionAttributeValues: {},
-    keyConditionExpression: '',
-    projectionExpression: undefined,
-    filterExpression: undefined,
-}, options = { requestId: '' }) {
-    try {
-        const params = {
-            ExpressionAttributeValues: payload.expressionAttributeValues,
-            KeyConditionExpression: payload.keyConditionExpression,
-            ProjectionExpression: payload.projectionExpression,
-            FilterExpression: payload.filterExpression,
-            TableName: tableName,
-        };
-
-        logger.debug({
-            requestId: options.requestId,
-            message: params
-        });
-
-        const results = [];
-        const resultData = await client.send(new QueryCommand(params));
-
-        logger.info({
-            requestId: options.requestId,
-            message: resultData.Items?.length
-        });
-
-        if (resultData.Items && resultData.Items.length > 0) {
-            resultData.Items.forEach(element => {
-                const item = buildItem(element);
-                results.push(item);
-            });
-        }
-
-        return results;
-    } catch (err) {
-        logger.error({
-            requestId: options.requestId,
-            message: err
-        });
-        throw err;
-    }
-}
-
-
-async function scan(payload = {
-    expressionAttributeValues: {},
-    projectionExpression: undefined,
-    filterExpression: undefined,
-}, options = { requestId: '' }) {
-    try {
-        const params = {
-            ExpressionAttributeValues: payload.expressionAttributeValues,
-            ProjectionExpression: payload.projectionExpression,
-            FilterExpression: payload.filterExpression,
-            TableName: tableName,
-        };
-
-        logger.debug({
-            requestId: options.requestId,
-            message: JSON.stringify(params)
-        });
-
-        const results = [];
-        const resultData = await client.send(new ScanCommand(params));
-
-        logger.info({
-            requestId: options.requestId,
-            message: resultData.Items?.length
-        });
-
-        if (resultData.Items && resultData.Items.length > 0) {
-            resultData.Items.forEach(element => {
-                const item = buildItem(element);
-                results.push(item);
-            });
-        }
-
-        return results;
-    } catch (err) {
-        logger.error({
-            requestId: options.requestId,
-            message: err
-        });
-        throw err;
-    }
-}
-
-
-async function putItem(payload = {
-    id: '',
-    userId: '',
-    accessToken: '',
-    createdAt: '',
-}, options = { requestId: '' }) {
-    try {
-        const params = {
-            TableName: tableName,
-            Item: {
-                id: {
-                    S: payload.id
-                },
-                userId: {
-                    S: payload.userId
-                },
-                accessToken: {
-                    S: payload.accessToken
-                },
-                createdAt: {
-                    S: payload.createdAt
-                },
-            },
-        };
-
-        logger.debug({
-            requestId: options.requestId,
-            message: JSON.stringify(params)
-        });
-
-        const resultData = await client.send(new PutItemCommand(params));
-
-        logger.info({
-            requestId: options.requestId,
-            message: resultData
-        });
-
-        return buildItem(params.Item);
-    } catch (err) {
-        logger.error({
-            requestId: options.requestId,
-            message: err
-        });
-        throw err;
-    }
-}
-
-
 
 async function getItem(payload = {
     key: {
@@ -247,9 +100,6 @@ async function deleteItem(payload = {
 
 
 module.exports = {
-    query: query,
-    scan: scan,
     getItem: getItem,
     deleteItem: deleteItem,
-    putItem: putItem
 }

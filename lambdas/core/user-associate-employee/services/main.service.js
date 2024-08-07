@@ -1,6 +1,6 @@
 
 const mainData = require('../data/main.data');
-const { buildInternalError, buildBadRequestError, buildForbiddenError } = require('../lib/global-exception-handler');
+const { buildInternalError, buildBadRequestError } = require('../lib/global-exception-handler');
 const { findStatusById } = require('../lib/list_values');
 const { successResponse } = require('../lib/response-handler');
 const { getTraceID } = require('../lib/util');
@@ -155,9 +155,7 @@ exports.doAction = async function (event, _context) {
             }
 
             //Actualiza la invitación: Activa, inactiva y elimina.
-            await doInvite(employee.results[0], pathParameters.id, payload.recordStatus, traceID);
-
-            return successResponse(body);
+            return await doInvite(employee.results[0], pathParameters.id, payload.recordStatus, traceID);
         } else {
             return buildBadRequestError('Al parecer la solicitud no es correcta. Intenta nuevamente, por favor.');
         }

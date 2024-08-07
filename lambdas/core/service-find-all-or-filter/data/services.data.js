@@ -47,40 +47,61 @@ async function scan(payload = {
             ExclusiveStartKey: payload.lastEvaluatedKey,
         };
 
-        logger.info({
+        logger.debug({
             requestId: options.requestId,
             message: JSON.stringify(params)
         });
 
-        const results = [];
-        const outputData = {
+        const resultData = {
             results: [],
-            lastEvaluatedKey: undefined
+            lastEvaluatedKey: null
         };
-        const resultData = await client.send(new ScanCommand(params));
+        let items;
+        if (payload.limit !== undefined && payload.limit !== null) {
+            do {
+                items = await client.send(new ScanCommand(params));
+                if (items.Items && items.Items.length > 0) {
+                    items.Items.forEach(item => resultData.results.push(buildItem(item)));
+                }
+                params.ExclusiveStartKey = items.LastEvaluatedKey;
+            } while (typeof items.LastEvaluatedKey !== "undefined" || resultData.results.length >= payload.limit);
+        } else {
+            items = await client.send(new ScanCommand(params));
+            if (items.Items && items.Items.length > 0) {
+                items.Items.forEach(item => resultData.results.push(buildItem(item)));
+            }
+        }
+
+        if (payload.limit !== undefined && payload.limit !== null && resultData.results.length > payload.limit) {
+            /**
+             * Si es mayor, siempre hay minimo un elemento por leer.
+             */
+            resultData.results = resultData.results.slice(0, payload.limit);
+            const lastPos = resultData.results.length - 1;
+            resultData.lastEvaluatedKey = {
+                id: resultData.results[lastPos].id
+            };
+        } else {
+            /**
+             * Si es menor o igual y hay elementos en ExclusiveStartKey, se establecen.
+             */
+            if (params.ExclusiveStartKey !== undefined && params.ExclusiveStartKey !== null && Object.keys(params.ExclusiveStartKey).length > 0) {
+                resultData.lastEvaluatedKey = {};
+                Object.keys(params.ExclusiveStartKey).forEach(key => {
+                    resultData.lastEvaluatedKey[key] = params.ExclusiveStartKey[key].S;
+                });
+            }
+        }
 
         logger.info({
             requestId: options.requestId,
-            message: resultData.Items?.length
+            message: {
+                size: resultData.results.length,
+                lastEvaluatedKey: resultData.lastEvaluatedKey,
+            },
         });
 
-        if (resultData.LastEvaluatedKey) {
-            outputData.lastEvaluatedKey = {
-                id: resultData.LastEvaluatedKey.id.S,
-                userId: resultData.LastEvaluatedKey.userId.S,
-            };
-        }
-
-        if (resultData.Items && resultData.Items.length > 0) {
-            resultData.Items.forEach(element => {
-                const item = buildItem(element);
-                results.push(item);
-            });
-        }
-
-        outputData.results = results;
-
-        return outputData;
+        return resultData;
     } catch (err) {
         logger.error({
             requestId: options.requestId,

@@ -23,9 +23,9 @@ exports.doAction = async function (event, context) {
                 password: body.password,
                 firstName: body.firstName,
                 lastName: body.lastName,
-                email: body.email,
-                phoneNumber: body.phoneNumber,
-                recordStatus: findStatusById(1)?.id,
+                email: body.email || "",
+                phoneNumber: body.phoneNumber || "",
+                recordStatus: findStatusById(1)?.id || 0,
                 createdAt: new Date().toISOString(),
 
                 documentType: 0,
@@ -50,7 +50,7 @@ exports.doAction = async function (event, context) {
                 limit: 1
             }, options);
 
-            if (userFounded.length > 0) {
+            if (userFounded.results.length > 0) {
                 return buildBadRequestError('Al parecer el usuario ya existe. Verifica los datos, por favor.');
             }
 

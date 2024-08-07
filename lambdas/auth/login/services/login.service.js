@@ -31,13 +31,13 @@ exports.doAction = async function (event, context) {
                 requestId: context.awsRequestId
             };
             const resultData = await userData.scan(payload, options);
-            if (resultData.length === 0) {
+            if (resultData.results.length === 0) {
                 return buildUnauthorized('Error al iniciar sesión; ID de usuario o contraseña son incorrectos');
             } else {
                 const payloadToken = {
                     expressionAttributeValues: {
                         ':userId': {
-                            S: resultData[0].id
+                            S: resultData.results[0].id
                         }
                     },
                     projectionExpression: undefined,
@@ -57,15 +57,15 @@ exports.doAction = async function (event, context) {
                 const tokenId = buildUuid();
 
                 const accessToken = JWT.sign({
-                    username: resultData[0].username,
-                    name: resultData[0].firstName,
+                    username: resultData.results[0].username,
+                    name: resultData.results[0].firstName,
                     tokenId: tokenId,
-                    id: resultData[0].id
+                    id: resultData.results[0].id
                 });
 
                 tokenData.putItem({
                     id: tokenId,
-                    userId: resultData[0].id,
+                    userId: resultData.results[0].id,
                     accessToken: accessToken,
                     createdAt: new Date().toISOString(),
                 }, options);
