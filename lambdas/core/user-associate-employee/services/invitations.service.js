@@ -92,7 +92,11 @@ exports.doInvite = async function (employee, userId, recordStatus, traceID) {
                 filterExpression: "attribute_exists(username)"
             }, options);
         }
-        return successResponse(body);
+        return successResponse({
+            id: employee.id,
+            userId: userId,
+            recordStatus: recordStatus,
+        });
     } catch (err) {
         logger.error({ message: err, requestId: traceID });
         return buildInternalError("No pudimos realizar la solicitud. Intenta más tarde, por favor.")
