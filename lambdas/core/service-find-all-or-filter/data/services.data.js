@@ -64,7 +64,7 @@ async function scan(payload = {
                     items.Items.forEach(item => resultData.results.push(buildItem(item)));
                 }
                 params.ExclusiveStartKey = items.LastEvaluatedKey;
-            } while (typeof items.LastEvaluatedKey !== "undefined" || resultData.results.length >= payload.limit);
+            } while (typeof items.LastEvaluatedKey !== "undefined" && resultData.results.length < payload.limit);
         } else {
             items = await client.send(new ScanCommand(params));
             if (items.Items && items.Items.length > 0) {
