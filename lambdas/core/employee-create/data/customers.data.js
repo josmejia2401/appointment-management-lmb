@@ -8,7 +8,7 @@ const constants = require('../lib/constants');
 const logger = require('../lib/logger');
 
 const client = new DynamoDBClient({ apiVersion: "2012-08-10", region: constants.constants.REGION });
-const tableName = `tbl-${constants.constants.APP_NAME}-customers-${constants.constants.ENVIRONMENT}`;
+const tableName = `tbl-${constants.constants.APP_NAME}-employees-${constants.constants.ENVIRONMENT}`;
 
 
 function buildItem(element) {
