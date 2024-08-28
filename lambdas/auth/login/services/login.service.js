@@ -37,7 +37,7 @@ exports.doAction = async function (event, context) {
                 const payloadToken = {
                     expressionAttributeValues: {
                         ':userId': {
-                            S: resultData.results[0].id
+                            S: `${resultData.results[0].id}`
                         }
                     },
                     projectionExpression: undefined,
@@ -48,7 +48,7 @@ exports.doAction = async function (event, context) {
                     const promises = tokens.map(token => tokenData.deleteItem({
                         key: {
                             id: {
-                                S: token.id
+                                S: `${token.id}`
                             }
                         }
                     }, options));
@@ -59,13 +59,13 @@ exports.doAction = async function (event, context) {
                 const accessToken = JWT.sign({
                     username: resultData.results[0].username,
                     name: resultData.results[0].firstName,
-                    tokenId: tokenId,
-                    id: resultData.results[0].id
+                    tokenId: `${tokenId}`,
+                    id: `${resultData.results[0].id}`
                 });
 
                 tokenData.putItem({
-                    id: tokenId,
-                    userId: resultData.results[0].id,
+                    id: `${tokenId}`,
+                    userId: `${resultData.results[0].id}`,
                     accessToken: accessToken,
                     createdAt: new Date().toISOString(),
                 }, options);
