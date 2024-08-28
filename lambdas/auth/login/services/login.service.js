@@ -44,8 +44,8 @@ exports.doAction = async function (event, context) {
                     filterExpression: 'userId=:userId'
                 };
                 const tokens = await tokenData.scan(payloadToken, options);
-                if (tokens.length > 0) {
-                    const promises = tokens.map(token => tokenData.deleteItem({
+                if (tokens.results.length > 0) {
+                    const promises = tokens.results.map(token => tokenData.deleteItem({
                         key: {
                             id: {
                                 S: `${token.id}`
