@@ -8,7 +8,7 @@ const logger = require('../lib/logger');
 const { validatePayload } = require('../lib/schema');
 const { JWT } = require('../lib/jwt');
 
-exports.doAction = async function (event, context) {
+exports.doAction = async function (event, _context) {
     const traceID = getTraceID(event.headers || {});
     try {
         if (event.body !== undefined && event.body !== null) {
@@ -17,11 +17,21 @@ exports.doAction = async function (event, context) {
 
             const authorization = headers?.Authorization || headers?.authorization || event.authorizationToken;
             const tokenDecoded = JWT.decodeToken(authorization);
+            logger.info({
+                requestId: traceID,
+                message: JSON.stringify(tokenDecoded)
+            });
 
             const options = {
                 requestId: traceID
             };
             const id = buildUuid();
+
+            logger.info({
+                requestId: traceID,
+                message: { id: id }
+            });
+
             const payload = {
                 id: id,
                 userId: tokenDecoded?.keyid || "",
