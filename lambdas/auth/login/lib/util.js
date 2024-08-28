@@ -1,5 +1,16 @@
-const uuid = require("uuid");
+function randomIntFromInterval(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function generateRowId() {
+    const shardId = randomIntFromInterval(1, 1000);
+    const customerEoch = Date.now();
+    let ts = new Date().getTime() - customerEoch;
+    ts = (ts * 64);
+    ts = ts + shardId;
+    return parseInt((ts * 512) + Math.floor(Math.random() * 512));
+}
 
 exports.buildUuid = function () {
-    return uuid.v4();
+    return `${generateRowId()}`;
 }

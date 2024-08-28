@@ -17,10 +17,7 @@
         "url": "https://github.com/josmejia2401/appointment-management-lmb/issues"
     },
     "homepage": "https://github.com/josmejia2401/appointment-management-lmb#readme",
-    "dependencies": {
-        "jsonwebtoken": "9.0.2",
-        "joi": "17.13.3"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@aws-sdk/client-dynamodb": "3.637.0"
     }

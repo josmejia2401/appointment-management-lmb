@@ -18,7 +18,6 @@
     },
     "homepage": "https://github.com/josmejia2401/appointment-management-lmb#readme",
     "dependencies": {
-        "jsonwebtoken": "9.0.2",
         "joi": "17.13.3"
     },
     "devDependencies": {

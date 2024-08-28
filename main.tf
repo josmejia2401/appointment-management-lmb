@@ -79,8 +79,8 @@ module "api_gateway_resources_security_login" {
 # API GATEWAY RESOURCES USERS
 ####################
 
-module "api_gateway_resources_core_user_create" {
-  source        = "./modules/apigateway-resources-core-user-create"
+module "api_gateway_resources_core_users_create" {
+  source        = "./modules/apigateway-resources-core-users-create"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -89,8 +89,8 @@ module "api_gateway_resources_core_user_create" {
   ]
 }
 
-module "api_gateway_resources_core_user_update" {
-  source        = "./modules/apigateway-resources-core-user-update"
+module "api_gateway_resources_core_users_update" {
+  source        = "./modules/apigateway-resources-core-users-update"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -99,8 +99,8 @@ module "api_gateway_resources_core_user_update" {
   ]
 }
 
-module "api_gateway_resources_core_user_find_by_id" {
-  source        = "./modules/apigateway-resources-core-user-find-by-id"
+module "api_gateway_resources_core_users_find_by_id" {
+  source        = "./modules/apigateway-resources-core-users-find-by-id"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -109,19 +109,8 @@ module "api_gateway_resources_core_user_find_by_id" {
   ]
 }
 
-module "api_gateway_resources_core_user_associate-employee" {
-  source        = "./modules/apigateway-resources-core-user-associate-employee"
-  api_id        = module.api_gateway.api_id # < output of module.api_gateway
-  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
-  depends_on = [
-    module.api_gateway,
-    module.users_dynamodb
-  ]
-}
-
-
-module "api_gateway_resources_core_user_find_employees" {
-  source        = "./modules/apigateway-resources-core-user-find-employees"
+module "api_gateway_resources_core_users_associate-employee" {
+  source        = "./modules/apigateway-resources-core-users-associate-employee"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -131,8 +120,8 @@ module "api_gateway_resources_core_user_find_employees" {
 }
 
 
-module "api_gateway_resources_core_user_find_invitations" {
-  source        = "./modules/apigateway-resources-core-user-find-invitations"
+module "api_gateway_resources_core_users_find_employees" {
+  source        = "./modules/apigateway-resources-core-users-find-employees"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -142,8 +131,19 @@ module "api_gateway_resources_core_user_find_invitations" {
 }
 
 
-module "api_gateway_resources_core_user_update_invitation" {
-  source        = "./modules/apigateway-resources-core-user-update-invitation"
+module "api_gateway_resources_core_users_find_invitations" {
+  source        = "./modules/apigateway-resources-core-users-find-invitations"
+  api_id        = module.api_gateway.api_id # < output of module.api_gateway
+  authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
+  depends_on = [
+    module.api_gateway,
+    module.users_dynamodb
+  ]
+}
+
+
+module "api_gateway_resources_core_users_update_invitation" {
+  source        = "./modules/apigateway-resources-core-users-update-invitation"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -156,8 +156,8 @@ module "api_gateway_resources_core_user_update_invitation" {
 # API GATEWAY RESOURCES SERVICES
 ####################
 
-module "api_gateway_resources_core_service_create" {
-  source        = "./modules/apigateway-resources-core-service-create"
+module "api_gateway_resources_core_services_create" {
+  source        = "./modules/apigateway-resources-core-services-create"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -166,8 +166,8 @@ module "api_gateway_resources_core_service_create" {
   ]
 }
 
-module "api_gateway_resources_core_service_update" {
-  source        = "./modules/apigateway-resources-core-service-update"
+module "api_gateway_resources_core_services_update" {
+  source        = "./modules/apigateway-resources-core-services-update"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -176,8 +176,8 @@ module "api_gateway_resources_core_service_update" {
   ]
 }
 
-module "api_gateway_resources_core_service_delete" {
-  source        = "./modules/apigateway-resources-core-service-delete"
+module "api_gateway_resources_core_services_delete" {
+  source        = "./modules/apigateway-resources-core-services-delete"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -186,8 +186,8 @@ module "api_gateway_resources_core_service_delete" {
   ]
 }
 
-module "api_gateway_resources_core_service_find_by_id" {
-  source        = "./modules/apigateway-resources-core-service-find-by-id"
+module "api_gateway_resources_core_services_find_by_id" {
+  source        = "./modules/apigateway-resources-core-services-find-by-id"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -196,8 +196,8 @@ module "api_gateway_resources_core_service_find_by_id" {
   ]
 }
 
-module "api_gateway_resources_core_service_find_all_or_filter" {
-  source        = "./modules/apigateway-resources-core-service-find-all-or-filter"
+module "api_gateway_resources_core_services_find_all_or_filter" {
+  source        = "./modules/apigateway-resources-core-services-find-all-or-filter"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -212,8 +212,8 @@ module "api_gateway_resources_core_service_find_all_or_filter" {
 ####################
 
 
-module "api_gateway_resources_core_customer_create" {
-  source        = "./modules/apigateway-resources-core-customer-create"
+module "api_gateway_resources_core_customers_create" {
+  source        = "./modules/apigateway-resources-core-customers-create"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -222,8 +222,8 @@ module "api_gateway_resources_core_customer_create" {
   ]
 }
 
-module "api_gateway_resources_core_customer_update" {
-  source        = "./modules/apigateway-resources-core-customer-update"
+module "api_gateway_resources_core_customers_update" {
+  source        = "./modules/apigateway-resources-core-customers-update"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -232,8 +232,8 @@ module "api_gateway_resources_core_customer_update" {
   ]
 }
 
-module "api_gateway_resources_core_customer_delete" {
-  source        = "./modules/apigateway-resources-core-customer-delete"
+module "api_gateway_resources_core_customers_delete" {
+  source        = "./modules/apigateway-resources-core-customers-delete"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -242,8 +242,8 @@ module "api_gateway_resources_core_customer_delete" {
   ]
 }
 
-module "api_gateway_resources_core_customer_find_by_id" {
-  source        = "./modules/apigateway-resources-core-customer-find-by-id"
+module "api_gateway_resources_core_customers_find_by_id" {
+  source        = "./modules/apigateway-resources-core-customers-find-by-id"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -252,8 +252,8 @@ module "api_gateway_resources_core_customer_find_by_id" {
   ]
 }
 
-module "api_gateway_resources_core_customer_find_all_or_filter" {
-  source        = "./modules/apigateway-resources-core-customer-find-all-or-filter"
+module "api_gateway_resources_core_customers_find_all_or_filter" {
+  source        = "./modules/apigateway-resources-core-customers-find-all-or-filter"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -268,8 +268,8 @@ module "api_gateway_resources_core_customer_find_all_or_filter" {
 ####################
 
 
-module "api_gateway_resources_core_employee_create" {
-  source        = "./modules/apigateway-resources-core-employee-create"
+module "api_gateway_resources_core_employees_create" {
+  source        = "./modules/apigateway-resources-core-employees-create"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -278,8 +278,8 @@ module "api_gateway_resources_core_employee_create" {
   ]
 }
 
-module "api_gateway_resources_core_employee_update" {
-  source        = "./modules/apigateway-resources-core-employee-update"
+module "api_gateway_resources_core_employees_update" {
+  source        = "./modules/apigateway-resources-core-employees-update"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -288,8 +288,8 @@ module "api_gateway_resources_core_employee_update" {
   ]
 }
 
-module "api_gateway_resources_core_employee_delete" {
-  source        = "./modules/apigateway-resources-core-employee-delete"
+module "api_gateway_resources_core_employees_delete" {
+  source        = "./modules/apigateway-resources-core-employees-delete"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -298,8 +298,8 @@ module "api_gateway_resources_core_employee_delete" {
   ]
 }
 
-module "api_gateway_resources_core_employee_find_by_id" {
-  source        = "./modules/apigateway-resources-core-employee-find-by-id"
+module "api_gateway_resources_core_employees_find_by_id" {
+  source        = "./modules/apigateway-resources-core-employees-find-by-id"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
@@ -308,8 +308,8 @@ module "api_gateway_resources_core_employee_find_by_id" {
   ]
 }
 
-module "api_gateway_resources_core_employee_find_all_or_filter" {
-  source        = "./modules/apigateway-resources-core-employee-find-all-or-filter"
+module "api_gateway_resources_core_employees_find_all_or_filter" {
+  source        = "./modules/apigateway-resources-core-employees-find-all-or-filter"
   api_id        = module.api_gateway.api_id # < output of module.api_gateway
   authorizer_id = module.api_gateway_resources_security_authorizer.authorizer_id
   depends_on = [
